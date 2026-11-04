@@ -1,0 +1,4 @@
+# local/snippets/ifs_files.custom
+# Placeholder for local list of files to add to ifs
+[perms=0755] automata-hello=/root/qnx-run/automata-hello
+[perms=0755] automata-msgpass=/root/qnx-run/automata-msgpass

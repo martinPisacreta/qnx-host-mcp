@@ -1,0 +1,12 @@
+{
+  "tool": "qnx_compile_c",
+  "source": "src/msgpass.c",
+  "state": "succeeded",
+  "exitCode": 0,
+  "artifact": {
+    "path": "build/34be3db37c3e23e138318aed99eae932/program",
+    "sizeBytes": 13992,
+    "sha256": "1e928f1699eb8ecf7b40850043347a31eaeb313c26f3fd9945bb8dc6c71901e0",
+    "independentlyVerified": true
+  }
+}
