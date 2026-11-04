@@ -1,0 +1,3 @@
+e5596d9e949d480cf1c129c6dbcd98adec84661edad263e40af204991dc6e798  automata-hello
+e606657ba117cbdb05ddea7385e92f5493e0b7712c82ce368fa15285be72f8fe  output/ifs.bin
+e5596d9e949d480cf1c129c6dbcd98adec84661edad263e40af204991dc6e798  /root/work/qnx-mcp/examples/hello/build/0279c855d511a150ba531331739c259b/program

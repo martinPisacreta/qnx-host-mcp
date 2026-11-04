@@ -1,0 +1,5 @@
+file: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /usr/lib/ldqnx-64.so.2, BuildID[md5/uuid]=ef24df11be439775b5729c6e6db4fcd4, with debug_info, not stripped
+qcc --version:
+Toolchain:  gcc	Version:  12.2.0	
+
+sha256: e5596d9e949d480cf1c129c6dbcd98adec84661edad263e40af204991dc6e798

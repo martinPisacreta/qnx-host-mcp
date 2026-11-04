@@ -1,0 +1,90 @@
+# QNX MCP smoke evidence
+
+**Real PATH run: inspect compiler output and successful artifact verification before claiming QNX compilation.**
+
+Success: true
+
+This smoke compiles a source file. It does not execute the artifact or call image tools.
+Compiler arguments are reconstructed from the fixed executor contract; the server does not expose an argv trace. Fake mode additionally compares them with the fixture artifact.
+
+```json
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "simulated": false,
+  "startedAt": "2026-11-03T20:25:05.120Z",
+  "finishedAt": "2026-11-03T20:25:05.431Z",
+  "success": true,
+  "toolsListed": [
+    "qnx_toolchain_info",
+    "qnx_compile_c",
+    "qnx_image_build",
+    "qnx_image_start",
+    "qnx_image_ip",
+    "qnx_image_stop",
+    "qnx_operation_status",
+    "qnx_operation_cancel"
+  ],
+  "toolsCalled": [
+    "qnx_toolchain_info",
+    "qnx_operation_status",
+    "qnx_compile_c",
+    "qnx_operation_status",
+    "qnx_operation_status"
+  ],
+  "toolchain": {
+    "operationId": "c5c8876cb314131ed067b5fb50001a75",
+    "state": "succeeded",
+    "exitCode": 0,
+    "stdout": "Toolchain:  gcc\tVersion:  12.2.0\t\n\n",
+    "stderr": "cc: targets available in /root/qnx800/host/linux/x86_64/etc/qcc:\n\t12.2.0,gcc_ntox86_64\t(default)\n\t12.2.0,gcc_ntoaarch64le\n\t12.2.0,gcc_ntox86_64_gpp\n\t12.2.0,gcc_ntoaarch64le_cxx\n\t12.2.0,gcc_ntoaarch64le_gpp\n\t12.2.0,gcc_ntox86_64_cxx\n",
+    "truncated": false,
+    "errorCode": null,
+    "commands": [
+      [
+        "--version"
+      ],
+      [
+        "-V"
+      ]
+    ]
+  },
+  "compile": {
+    "operationId": "0279c855d511a150ba531331739c259b",
+    "state": "succeeded",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "truncated": false,
+    "errorCode": null,
+    "artifact": {
+      "path": "build/0279c855d511a150ba531331739c259b/program",
+      "size": 9208,
+      "sha256": "e5596d9e949d480cf1c129c6dbcd98adec84661edad263e40af204991dc6e798"
+    },
+    "arguments": [
+      "-Vgcc_ntox86_64",
+      "-o",
+      "build/0279c855d511a150ba531331739c259b/program",
+      "src/hello.c"
+    ],
+    "argumentRepresentation": "workspace-relative paths; reconstructed from fixed executor contract",
+    "executedArguments": [
+      "-Vgcc_ntox86_64",
+      "-o",
+      "/root/work/qnx-mcp/examples/hello/build/0279c855d511a150ba531331739c259b/program",
+      "/root/work/qnx-mcp/examples/hello/src/hello.c"
+    ],
+    "executedArgumentsSource": "reconstructed; not a server-provided execution trace"
+  },
+  "artifact": {
+    "path": "build/0279c855d511a150ba531331739c259b/program",
+    "sizeBytes": 9208,
+    "sha256": "e5596d9e949d480cf1c129c6dbcd98adec84661edad263e40af204991dc6e798",
+    "independentlyVerified": true,
+    "retained": true,
+    "note": "Artifact remains in the examples/hello workspace; it was not executed."
+  },
+  "error": null
+}
+```

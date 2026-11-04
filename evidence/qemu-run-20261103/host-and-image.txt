@@ -1,0 +1,7 @@
+QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)
+OPT_ARCH='x86_64'
+OPT_GRAPHICS='no'
+OPT_IP='dhcp'
+OPT_TYPE='qemu'
+6.6.87.2-microsoft-standard-WSL2
+2026-11-03T23:26:44Z

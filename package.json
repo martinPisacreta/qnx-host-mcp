@@ -1,0 +1,23 @@
+{
+  "name": "qnx-host-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that lets an AI coding assistant build, boot and inspect QNX SDP 8.0 targets in QEMU through a fixed, safe set of host tools.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "qnx-host-mcp": "src/server.mjs"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test": "node --test \"test/*.test.mjs\"",
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:fake": "node scripts/smoke.mjs --fake"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2"
+  }
+}
