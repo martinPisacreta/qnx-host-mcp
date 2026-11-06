@@ -8,6 +8,29 @@ A second example, [native QNX message passing](examples/msgpass/README.md), uses
 
 A third example, a [QNX resource manager](examples/resmgr/README.md), registers `/dev/automata-echo` with `resmgr_attach` and a custom `io_read` handler, and the same process reads it back through `open` and `read`. It was compiled through MCP with `node scripts/compile-example.mjs examples/resmgr src/resmgr.c` and run on QNX 8.0 in QEMU with the expected output and exit status 0 ([evidence](evidence/qemu-run-resmgr-20261106/README.md)).
 
+## Start here
+
+QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and compiling workspace C sources with fixed arguments.
+
+| Resource | What it shows | Evidence |
+| --- | --- | --- |
+| [Demo video](https://youtu.be/QTPR1CjDbIU) | Watch the demo | — |
+| [Tutorial: Part 1](tutorial/README.md) | Compile a QNX C program, build an image and run it in QEMU | [Verification log](tutorial/verification-2026-11-06.txt) |
+| [Tutorial: Part 2](tutorial/part2-message-passing.md) | Native synchronous message passing | [Verification log](tutorial/verification-part2-2026-11-06.txt) |
+| [Tutorial: Part 3](tutorial/part3-resource-manager.md) | A resource manager accessed with ordinary file operations | [Recorded run](evidence/qemu-run-resmgr-20261106/) |
+| [Hello example](examples/hello/) | QNX-target C compilation and guest execution | [Recorded run](evidence/qemu-run-20261103/) |
+| [Message-passing example](examples/msgpass/) | `ChannelCreate`, `ConnectAttach`, `MsgSend`, `MsgReceive`, `MsgReply` | [Recorded run](evidence/qemu-run-msgpass-20261104/) |
+| [Resource-manager example](examples/resmgr/) | `resmgr_attach`, custom `io_read`, ordinary `open` and `read` | [Recorded run](evidence/qemu-run-resmgr-20261106/) |
+
+### Try it
+
+1. Prepare Node.js 22 or later and the existing project dependencies; load the licensed QNX SDK environment for real compilation.
+2. Follow [Configuration](#configuration): set an absolute `QNX_MCP_WORKSPACE` containing `src/hello.c`, provide a trusted compiler `PATH`, and configure the stdio MCP client.
+3. From the repository root, run `npm run smoke:fake` for simulated validation or `npm run smoke` with the SDK environment loaded for real compilation and artifact verification.
+4. Follow [Tutorial Part 1](tutorial/README.md) for the separate SDK image and QEMU workflow, then continue with Parts 2 and 3 above.
+
+The compilation smoke does not execute the artifact; MCP image lifecycle tools remain blocked with `UNSAFE_CONFIGURATION`.
+
 ## Configuration
 
 Requires Node.js 22 or later and the existing project dependencies. Configure an absolute QNX_MCP_WORKSPACE directory containing src/hello.c and a trusted PATH containing the QNX executables. The server resolves executables from absolute PATH entries and invokes them without a shell. It forwards selected host and QNX environment variables only.
