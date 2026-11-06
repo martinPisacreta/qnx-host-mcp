@@ -1,0 +1,47 @@
+Verification run of tutorial Part 2 (native message passing), 6 November 2026, about 03:55 UTC.
+Host: Windows 11, WSL2, Ubuntu 24.04.5 LTS. It reused the Part 1 image directory /root/qnx-tutorial-run.
+The output below is the console of that run, unedited except for this header.
+
+== part1 image present
+-rw-r--r-- 1 root root      152 Nov  6 01:59 /root/qnx-tutorial-run/local/snippets/ifs_files.custom
+-rw-r--r-- 1 root root 10918636 Nov  6 01:59 /root/qnx-tutorial-run/output/ifs.bin
+f5e97c92017c8e93
+== compile
+qcc rc=0
+13992 automata-msgpass
+automata-msgpass: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /usr/lib/ldqnx-64.so.2, BuildID[md5/uuid]=49d216ffcfea14bb6e7a9e2ef044f646, with debug_info, not stripped
+== add to image
+-- ifs_files.custom tail:
+[perms=0755] automata-hello=/root/qnx-tutorial-run/automata-hello
+[perms=0755] automata-msgpass=/root/qnx-tutorial-run/automata-msgpass
+-- post_start.custom tail:
+echo "QNX_MCP_RUN_BEGIN"
+uname -a
+/proc/boot/automata-hello
+echo "QNX_MCP_RUN_EXIT=$?"
+echo "QNX_MSGPASS_RUN_BEGIN"
+/proc/boot/automata-msgpass
+echo "QNX_MSGPASS_RUN_EXIT=$?"
+build rc=0
+
+For full list of options, run "mkqnximage --options"
+10930992 output/ifs.bin
+== boot
+marker after 24 s
+qemu-system-x86_64: terminating on signal 15 from pid 12 (bash)
+no qemu left
+== output
+QNX_MCP_RUN_BEGIN
+QNX noname 8.0.0 2026/06/05-16:26:03EDT x86pc x86_64
+Hello from QNX MCP smoke.
+QNX_MCP_RUN_EXIT=0
+QNX_MSGPASS_RUN_BEGIN
+msgpass: sent 7 got 14
+msgpass: sent 11 got 22
+msgpass: sent 21 got 42
+msgpass: ok
+QNX_MSGPASS_RUN_EXIT=0
+
+== final size
+170M	/root/qnx-tutorial-run
+52K	/root/qnx-tutorial-src

@@ -1,5 +1,7 @@
 # Run a QNX 8.0 C program in QEMU from Windows
 
+This is Part 1. [Part 2](part2-message-passing.md) adds native QNX message passing (`MsgSend`, `MsgReceive`, `MsgReply`) to the same image; both parts were verified on 6 November 2026.
+
 ## What you will achieve
 
 Compile a C program for QNX 8.0 using Ubuntu under WSL2 on Windows. Build a custom image and run the program automatically inside QEMU. Capture its output in a file without physical hardware or a guest login. The guest has no network interface; installation requires Internet access.
@@ -221,6 +223,7 @@ The launcher stops and waits for the QEMU process it started. Preserve `output/q
 
 - [`hello.c`](hello.c): the exact program compiled in step 4.
 - [`run-qemu.sh`](run-qemu.sh): the boot and capture block from step 6, as one script.
+- [`part2-message-passing.md`](part2-message-passing.md): Part 2, native QNX message passing between a client and a server thread.
 - [`verification-2026-11-06.txt`](verification-2026-11-06.txt): console output of the complete run of steps 4 to 7 on 6 November 2026 (Windows 11, WSL2, Ubuntu 24.04.5 LTS), including the guest output above.
 - [`../evidence/qemu-run-20261103/`](../evidence/qemu-run-20261103/): the first recorded run of the same custom-image method, from this project's MCP smoke test on 3 November 2026.
 
