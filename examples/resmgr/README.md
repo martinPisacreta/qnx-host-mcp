@@ -5,7 +5,7 @@ A server thread handles requests; the main thread acts as an ordinary POSIX clie
 
 ## Status
 
-Compiled with `qcc -Vgcc_ntox86_64` (QNX SDP 8.0) and run on QNX 8.0 in QEMU on 6 November 2026.
+Compiled through QNX Host MCP (`node scripts/compile-example.mjs examples/resmgr src/resmgr.c`) and run on QNX 8.0 in QEMU on 6 November 2026; a direct `qcc -Vgcc_ntox86_64` build also succeeds without warnings.
 The output matched [expected-output.txt](expected-output.txt) and the process exited with status 0.
 Evidence: [evidence/qemu-run-resmgr-20261106](../../evidence/qemu-run-resmgr-20261106/README.md).
 

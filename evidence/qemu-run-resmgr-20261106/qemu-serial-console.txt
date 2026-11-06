@@ -8,10 +8,10 @@ overriding mask for controller 2, vector_base 0
 ---> Starting fsevmgr
 ---> Starting devb
 # Path=0 - Intel 82371SB
+---> Mounting file systems
  target=0 lun=0     Direct-Access(0) -          QEMU HARDDISK    Rev: 2.5+
 Path=1 - Intel 82371SB
- target=0 lun=0            CD-ROM(5) - QEMU     QEMU DVD-ROM     Rev: 2.5+---> Mounting file systems
-
+ target=0 lun=0            CD-ROM(5) - QEMU     QEMU DVD-ROM     Rev: 2.5+
 ---> Mounting file systems
 ---> Starting Networking
 if_up: tries exhausted

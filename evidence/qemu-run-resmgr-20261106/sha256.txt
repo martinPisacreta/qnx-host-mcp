@@ -1,2 +1,2 @@
 a478fd5399b484442ce4d1308e96a16feb0d71e7acca919d488bd115398dbd13  examples/resmgr/src/resmgr.c
-93428ce907a8a2c8b3998aab365a8ffdecfbd871e604cf8a2bb6c64abe4ef1d0  automata-resmgr
+fd8df5384b6aa110494c429c6d2e671ad92fbedae5f080431c3e5f28fc4b7249  automata-resmgr (MCP artifact, placed unchanged at /proc/boot/automata-resmgr)

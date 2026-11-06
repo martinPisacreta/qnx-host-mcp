@@ -1,0 +1,12 @@
+{
+  "tool": "qnx_compile_c",
+  "source": "src/resmgr.c",
+  "state": "succeeded",
+  "exitCode": 0,
+  "artifact": {
+    "path": "build/7e29e0b654bccb7758b70aa8206244df/program",
+    "sizeBytes": 14344,
+    "sha256": "fd8df5384b6aa110494c429c6d2e671ad92fbedae5f080431c3e5f28fc4b7249",
+    "independentlyVerified": true
+  }
+}

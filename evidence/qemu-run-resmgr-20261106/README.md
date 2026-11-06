@@ -4,11 +4,11 @@ This directory records the third example, [examples/resmgr](../../examples/resmg
 
 ## Compilation
 
-`qcc -Vgcc_ntox86_64 -Wall -o automata-resmgr src/resmgr.c` returned 0 with no warnings. Unlike the msgpass example, this build was run directly with qcc, not through the MCP server. The source and binary hashes are in [sha256.txt](sha256.txt).
+Like the msgpass example, the source was compiled through QNX Host MCP: `node scripts/compile-example.mjs examples/resmgr src/resmgr.c` launched the MCP server over stdio, called `qnx_compile_c` with `src/resmgr.c` and polled `qnx_operation_status`. The result is in [mcp-compile-result.json](mcp-compile-result.json): state `succeeded`, exit code 0, a 14344-byte artifact, re-hashed by the client. A direct `qcc -Vgcc_ntox86_64 -Wall` build of the same source also returned 0 with no warnings. The source and MCP artifact hashes are in [sha256.txt](sha256.txt).
 
 ## Guest execution
 
-The binary was placed at `/proc/boot/automata-resmgr` by [ifs_files.custom](ifs_files.custom) in the custom image of the [tutorial](../../tutorial/README.md), and [post_start.custom](post_start.custom) ran it at the end of startup, after the hello and message-passing examples in the same boot.
+The unchanged MCP artifact was placed at `/proc/boot/automata-resmgr` by [ifs_files.custom](ifs_files.custom) in the custom image of the [tutorial](../../tutorial/README.md), and [post_start.custom](post_start.custom) ran it at the end of startup, after the hello and message-passing examples in the same boot.
 
 From [qemu-serial-console.txt](qemu-serial-console.txt):
 

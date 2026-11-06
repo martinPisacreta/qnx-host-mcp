@@ -3,7 +3,7 @@ Host kernel: 6.6.87.2-microsoft-standard-WSL2
 Host OS: Ubuntu 24.04.5 LTS (WSL2)
 QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)
 qcc: /root/qnx800/host/linux/x86_64/usr/bin/qcc, default target  12.2.0,gcc_ntox86_64 (default)
-Compile: qcc -Vgcc_ntox86_64 -Wall -o automata-resmgr src/resmgr.c (rc 0, no warnings)
+Compile: through MCP (node scripts/compile-example.mjs examples/resmgr src/resmgr.c; see mcp-compile-result.json); direct check: qcc -Vgcc_ntox86_64 -Wall -o automata-resmgr src/resmgr.c (rc 0, no warnings)
 automata-resmgr: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /usr/lib/ldqnx-64.so.2, BuildID[md5/uuid]=00cf70a3fc0e0bdc5c60276948c4a7cf, with debug_info, not stripped
 Image: mkqnximage --type=qemu --arch=x86_64 --graphics=no (custom image of the tutorial), no network (-nic none), TCG (-cpu max)
-Marker QNX_RESMGR_RUN_EXIT seen 25 s after QEMU started
+Marker QNX_RESMGR_RUN_EXIT seen 24 s after QEMU started (run of the MCP-built artifact)
