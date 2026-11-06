@@ -150,3 +150,7 @@ The retained evidence was produced from a working copy of this source before pub
 This project is an entry for the QNX Global Hackathon, Developer Tooling and Host Tools category. The evidence is summarized in [EVIDENCE.md](docs/EVIDENCE.md) and the demonstration plan is in [DEMO.md](docs/DEMO.md). The simulated demonstration remains a labeled rehearsal.
 
 Publication note: project and validation paths in this document use neutral placeholders. Consult the unchanged evidence files for original recorded paths.
+
+## Tutorial
+
+Step by step, verified on 6 November 2026: [Run a QNX 8.0 C program in QEMU from Windows](tutorial/README.md) (WSL2 and Ubuntu 24.04, qcc, a custom mkqnximage image and a captured serial console, without hardware or a guest login).

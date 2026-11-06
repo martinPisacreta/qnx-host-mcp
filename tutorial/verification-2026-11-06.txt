@@ -1,0 +1,77 @@
+Verification run of tutorial steps 4 to 7, 6 November 2026, 01:59 UTC.
+Host: Windows 11, WSL2, Ubuntu 24.04.5 LTS. Fresh directories /root/qnx-tutorial-src and /root/qnx-tutorial-run.
+The output below is the console of that run, unedited except for this header.
+
+== host
+6.6.87.2-microsoft-standard-WSL2
+Ubuntu 24.04.5 LTS
+ls: cannot access '/dev/kvm': No such file or directory
+== software center
+/root/qnx/qnxsoftwarecenter/qnxsoftwarecenter/qnxsoftwarecenter_clt
+== sizes
+11G	/root/qnx800
+/dev/sdd       1007G   17G  940G   2% /
+QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)
+== qcc
+/root/qnx800/host/linux/x86_64/usr/bin/qcc
+cc: targets available in /root/qnx800/host/linux/x86_64/etc/qcc:
+	12.2.0,gcc_ntox86_64	(default)
+	12.2.0,gcc_ntoaarch64le
+	12.2.0,gcc_ntox86_64_gpp
+	12.2.0,gcc_ntoaarch64le_cxx
+qcc rc=0
+hello: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /usr/lib/ldqnx-64.so.2, BuildID[md5/uuid]=70d85da7c95b69dc9fcfcf87644c7e6f, with debug_info, not stripped
+== step5
+mkqnximage rc=0
+
+
+For full list of options, run "mkqnximage --options"
+total 32
+drwxr-xr-x 2 root root 4096 Nov  6 01:59 .
+drwxr-xr-x 6 root root 4096 Nov  6 01:59 ..
+-rw-r--r-- 1 root root   98 Nov  6 01:59 data_files.custom
+-rw-r--r-- 1 root root   86 Nov  6 01:59 ifs_files.custom
+-rw-r--r-- 1 root root  125 Nov  6 01:59 ifs_start.custom
+-rw-r--r-- 1 root root  664 Nov  6 01:59 post_start.custom
+-rw-r--r-- 1 root root   83 Nov  6 01:59 profile.custom
+-rw-r--r-- 1 root root  102 Nov  6 01:59 system_files.custom
+-- ifs_files.custom:
+# local/snippets/ifs_files.custom
+# Placeholder for local list of files to add to ifs
+[perms=0755] automata-hello=/root/qnx-tutorial-run/automata-hello
+-- post_start.custom:
+# local/snippets/post_start.custom
+# Commands executed from post_startup.sh. Executed at the end of system startup whether slm is in use
+# or not
+#
+# To allow resource managers to be run properly with and without security policies, command lines
+# should be written in one of the following forms:
+#
+#     START(resmgr_t) resmgr DROPROOT(resmgr_uid)
+#     STARTU(resmgr_t, resmgr_uid) resmgr
+# Where resmgr_t is the security type name (arbitrary but usually the name of the resmgr with _t appended),
+# and resmgr_uid is the id to use for both uid and gid.  DROPROOT is used only in cases where the
+# resource manager supports a -U option for switching to non-root.
+echo "QNX_MCP_RUN_BEGIN"
+uname -a
+/proc/boot/automata-hello
+echo "QNX_MCP_RUN_EXIT=$?"
+build rc=0
+
+
+For full list of options, run "mkqnximage --options"
+-rw-r--r-- 1 root root      169 Nov  6 01:59 output/disk-qemu.vmdk
+-rw-r--r-- 1 root root 10918636 Nov  6 01:59 output/ifs.bin
+== step6
+marker after 24 s
+qemu-system-x86_64: terminating on signal 15 from pid 12 (bash)
+no qemu left
+== step7
+QNX_MCP_RUN_BEGIN
+QNX noname 8.0.0 2026/06/05-16:26:03EDT x86pc x86_64
+Hello from QNX MCP smoke.
+QNX_MCP_RUN_EXIT=0
+
+== final size
+170M	/root/qnx-tutorial-run
+28K	/root/qnx-tutorial-src
