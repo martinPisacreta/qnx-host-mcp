@@ -33,7 +33,19 @@ import { captureOwnedGroup, captureOwnedDescendant, readOwnedProcessSockets } fr
     const group = await captureOwnedGroup(launcher.pid);
     const target = await captureOwnedDescendant(group, pid);
     assert.equal(target.pid, pid);
-    const sockets = await readOwnedProcessSockets(group, target);
+    // The child may still be closing startup descriptors; retry only this positive observation.
+    let sockets;
+    for (let attempt = 0; ; attempt++) {
+      try {
+        sockets = await readOwnedProcessSockets(group, target);
+        break;
+      } catch (error) {
+        if (attempt === 4 ||
+            error.message !==
+            'Owned process socket observation could not be established.') throw error;
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+    }
     assert.deepEqual(sockets.ownedInodes, []);
     assert.equal(typeof sockets.tcpText, 'string');
     assert.equal(typeof sockets.tcp6Text, 'string');
