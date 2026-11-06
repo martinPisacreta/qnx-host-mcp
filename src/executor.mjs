@@ -372,7 +372,7 @@ export class Executor {
           imageName, directory: instance.directory,
           launcher: instance.launcher, target: instance.target,
         })
-        : await readOwnedProcessSockets(instance.launcher, instance.target);
+        : await this.observeOwnedProcessSockets(instance);
       this.checkpoint(operation);
       const ports = unsafeListeningPorts(
         observation.tcpText, observation.tcp6Text, observation.ownedInodes);
@@ -382,6 +382,20 @@ export class Executor {
     } catch (error) {
       if (error instanceof ToolError) throw error;
       throw new ToolError('UNSAFE_NETWORK', 'Image network safety could not be established.');
+    }
+  }
+
+  // A descriptor closed while /proc is being read makes one observation
+  // inconsistent; observe again a bounded number of times and still fail
+  // closed, never accepting a partial socket set.
+  async observeOwnedProcessSockets(instance) {
+    for (let attempt = 1; ; attempt++) {
+      try {
+        return await readOwnedProcessSockets(instance.launcher, instance.target);
+      } catch (error) {
+        if (attempt >= 5) throw error;
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
     }
   }
 
