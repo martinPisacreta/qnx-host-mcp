@@ -1,0 +1,12 @@
+{
+  "tool": "qnx_compile_c",
+  "source": "src/events.c",
+  "state": "succeeded",
+  "exitCode": 0,
+  "artifact": {
+    "path": "build/779db13d6559ee81d87d4e1953835315/program",
+    "sizeBytes": 14208,
+    "sha256": "6ff7927b3d766767187a48227680eb6f064efa9a347f4dde8a12776c452881da",
+    "independentlyVerified": true
+  }
+}

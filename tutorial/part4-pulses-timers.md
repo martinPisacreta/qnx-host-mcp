@@ -84,4 +84,4 @@ If only the earlier examples appear, check the image mapping, the startup block 
 A timing failure (`elapsed_ms_ok=0`) needs the guest output and the host load preserved for investigation; the example does not print the elapsed milliseconds.
 The recorded guest had no network interface; networking and sshd startup messages are unrelated.
 
-Back to [Part 1](README.md), [Part 2](part2-message-passing.md) or [Part 3](part3-resource-manager.md).
+Back to [Part 1](README.md), [Part 2](part2-message-passing.md) or [Part 3](part3-resource-manager.md). Next: [Part 5](part5-registered-events.md), registered events in the same image.

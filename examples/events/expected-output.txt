@@ -1,0 +1,2 @@
+QNX_EVENTS_OK delivered=3
+registered=1 verified=1

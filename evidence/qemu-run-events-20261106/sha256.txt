@@ -1,0 +1,2 @@
+2ccec930139c74ede4ef816c5c32014c22cf0d88ed02e85f6a054f5e78d9e198  examples/events/src/events.c
+6ff7927b3d766767187a48227680eb6f064efa9a347f4dde8a12776c452881da  automata-events (MCP artifact, placed unchanged at /proc/boot/automata-events)
