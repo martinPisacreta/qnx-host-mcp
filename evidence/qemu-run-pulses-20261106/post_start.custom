@@ -1,0 +1,13 @@
+echo "QNX_MCP_RUN_BEGIN"
+uname -a
+/proc/boot/automata-hello
+echo "QNX_MCP_RUN_EXIT=$?"
+echo "QNX_MSGPASS_RUN_BEGIN"
+/proc/boot/automata-msgpass
+echo "QNX_MSGPASS_RUN_EXIT=$?"
+echo "QNX_RESMGR_RUN_BEGIN"
+/proc/boot/automata-resmgr
+echo "QNX_RESMGR_RUN_EXIT=$?"
+echo "QNX_PULSES_RUN_BEGIN"
+/proc/boot/automata-pulses
+echo "QNX_PULSES_RUN_EXIT=$?"

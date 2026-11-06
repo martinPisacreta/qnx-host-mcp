@@ -1,6 +1,6 @@
 # Run a QNX 8.0 C program in QEMU from Windows
 
-This is Part 1. [Part 2](part2-message-passing.md) adds native QNX message passing (`MsgSend`, `MsgReceive`, `MsgReply`) to the same image, and [Part 3](part3-resource-manager.md) adds a resource manager read with ordinary `open` and `read`; all three were verified on 6 November 2026.
+This is Part 1. [Part 2](part2-message-passing.md) adds native QNX message passing (`MsgSend`, `MsgReceive`, `MsgReply`) to the same image, [Part 3](part3-resource-manager.md) adds a resource manager read with ordinary `open` and `read`, and [Part 4](part4-pulses-timers.md) adds a periodic timer that delivers pulses to a channel; all four were verified on 6 November 2026.
 
 ## What you will achieve
 
@@ -225,6 +225,7 @@ The launcher stops and waits for the QEMU process it started. Preserve `output/q
 - [`run-qemu.sh`](run-qemu.sh): the boot and capture block from step 6, as one script.
 - [`part2-message-passing.md`](part2-message-passing.md): Part 2, native QNX message passing between a client and a server thread.
 - [`part3-resource-manager.md`](part3-resource-manager.md): Part 3, a resource manager at `/dev/automata-echo`, compiled directly and through MCP.
+- [`part4-pulses-timers.md`](part4-pulses-timers.md): Part 4, a `CLOCK_MONOTONIC` timer that delivers pulses received with `MsgReceivePulse`, compiled directly and through MCP.
 - [`verification-2026-11-06.txt`](verification-2026-11-06.txt): console output of the complete run of steps 4 to 7 on 6 November 2026 (Windows 11, WSL2, Ubuntu 24.04.5 LTS), including the guest output above.
 - [`../evidence/qemu-run-20261103/`](../evidence/qemu-run-20261103/): the first recorded run of the same custom-image method, from this project's MCP smoke test on 3 November 2026.
 

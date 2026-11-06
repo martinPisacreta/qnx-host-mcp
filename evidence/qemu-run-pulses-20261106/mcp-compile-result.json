@@ -1,0 +1,12 @@
+{
+  "tool": "qnx_compile_c",
+  "source": "src/pulses.c",
+  "state": "succeeded",
+  "exitCode": 0,
+  "artifact": {
+    "path": "build/ad3a6aa4cd4482d44517ad2f2b4e698f/program",
+    "sizeBytes": 13896,
+    "sha256": "bddbd4f337ddcd0ebb28cec641bd450d0dce609ed4b24aa84afa9567fa7abe87",
+    "independentlyVerified": true
+  }
+}

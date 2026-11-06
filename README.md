@@ -8,6 +8,8 @@ A second example, [native QNX message passing](examples/msgpass/README.md), uses
 
 A third example, a [QNX resource manager](examples/resmgr/README.md), registers `/dev/automata-echo` with `resmgr_attach` and a custom `io_read` handler, and the same process reads it back through `open` and `read`. It was compiled through MCP with `node scripts/compile-example.mjs examples/resmgr src/resmgr.c` and run on QNX 8.0 in QEMU with the expected output and exit status 0 ([evidence](evidence/qemu-run-resmgr-20261106/README.md)).
 
+A fourth example, [native QNX pulses and timers](examples/pulses/README.md), arms a `CLOCK_MONOTONIC` timer whose event is a pulse (`SIGEV_PULSE_INIT`) on the process's own channel and receives five pulses with `MsgReceivePulse`. It was compiled through MCP with `node scripts/compile-example.mjs examples/pulses src/pulses.c` and run on QNX 8.0 in QEMU with the expected output and exit status 0 ([evidence](evidence/qemu-run-pulses-20261106/README.md)).
+
 ## Start here
 
 QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and compiling workspace C sources with fixed arguments.
@@ -18,16 +20,18 @@ QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and 
 | [Tutorial: Part 1](tutorial/README.md) | Compile a QNX C program, build an image and run it in QEMU | [Verification log](tutorial/verification-2026-11-06.txt) |
 | [Tutorial: Part 2](tutorial/part2-message-passing.md) | Native synchronous message passing | [Verification log](tutorial/verification-part2-2026-11-06.txt) |
 | [Tutorial: Part 3](tutorial/part3-resource-manager.md) | A resource manager accessed with ordinary file operations | [Recorded run](evidence/qemu-run-resmgr-20261106/) |
+| [Tutorial: Part 4](tutorial/part4-pulses-timers.md) | A periodic timer that delivers pulses to a channel | [Recorded run](evidence/qemu-run-pulses-20261106/) |
 | [Hello example](examples/hello/) | QNX-target C compilation and guest execution | [Recorded run](evidence/qemu-run-20261103/) |
 | [Message-passing example](examples/msgpass/) | `ChannelCreate`, `ConnectAttach`, `MsgSend`, `MsgReceive`, `MsgReply` | [Recorded run](evidence/qemu-run-msgpass-20261104/) |
 | [Resource-manager example](examples/resmgr/) | `resmgr_attach`, custom `io_read`, ordinary `open` and `read` | [Recorded run](evidence/qemu-run-resmgr-20261106/) |
+| [Pulses and timers example](examples/pulses/) | `SIGEV_PULSE_INIT`, `timer_create`, `timer_settime`, `MsgReceivePulse` | [Recorded run](evidence/qemu-run-pulses-20261106/) |
 
 ### Try it
 
 1. Prepare Node.js 22 or later and the existing project dependencies; load the licensed QNX SDK environment for real compilation.
 2. Follow [Configuration](#configuration): set an absolute `QNX_MCP_WORKSPACE` containing `src/hello.c`, provide a trusted compiler `PATH`, and configure the stdio MCP client.
 3. From the repository root, run `npm run smoke:fake` for simulated validation or `npm run smoke` with the SDK environment loaded for real compilation and artifact verification.
-4. Follow [Tutorial Part 1](tutorial/README.md) for the separate SDK image and QEMU workflow, then continue with Parts 2 and 3 above.
+4. Follow [Tutorial Part 1](tutorial/README.md) for the separate SDK image and QEMU workflow, then continue with Parts 2 to 4 above.
 
 The compilation smoke does not execute the artifact; MCP image lifecycle tools remain blocked with `UNSAFE_CONFIGURATION`.
 
@@ -178,4 +182,4 @@ Publication note: project and validation paths in this document use neutral plac
 
 ## Tutorial
 
-Step by step, verified on 6 November 2026: [Run a QNX 8.0 C program in QEMU from Windows](tutorial/README.md) (WSL2 and Ubuntu 24.04, qcc, a custom mkqnximage image and a captured serial console, without hardware or a guest login), [Part 2: native QNX message passing](tutorial/part2-message-passing.md) and [Part 3: a resource manager](tutorial/part3-resource-manager.md) in the same image.
+Step by step, verified on 6 November 2026: [Run a QNX 8.0 C program in QEMU from Windows](tutorial/README.md) (WSL2 and Ubuntu 24.04, qcc, a custom mkqnximage image and a captured serial console, without hardware or a guest login), [Part 2: native QNX message passing](tutorial/part2-message-passing.md) [Part 3: a resource manager](tutorial/part3-resource-manager.md) and [Part 4: pulses and timers](tutorial/part4-pulses-timers.md) in the same image.

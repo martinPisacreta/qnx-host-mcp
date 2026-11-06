@@ -1,0 +1,2 @@
+0181ce2983ddd3ec53e8e4c263561178b32dd79aa51cd550e35858de7687743a  examples/pulses/src/pulses.c
+bddbd4f337ddcd0ebb28cec641bd450d0dce609ed4b24aa84afa9567fa7abe87  automata-pulses (MCP artifact, placed unchanged at /proc/boot/automata-pulses)

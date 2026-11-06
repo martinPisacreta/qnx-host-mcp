@@ -1,0 +1,2 @@
+QNX_PULSES_OK received=5
+elapsed_ms_ok=1

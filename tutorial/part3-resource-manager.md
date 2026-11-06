@@ -109,4 +109,4 @@ The `void *` cast in line 66 addresses the original `SETIOV` const-pointer warni
 Other failures print diagnostics and terminate the demonstration. The recorded guest had no network interface; networking and sshd startup messages are unrelated.
 This chapter does not cover a persistent service (the path disappears when `main` returns) or operations beyond ordinary reads. The run shown is the 6 November 2026 evidence of the published example.
 
-Back to [Part 1](README.md) or [Part 2](part2-message-passing.md).
+Back to [Part 1](README.md) or [Part 2](part2-message-passing.md). Next: [Part 4](part4-pulses-timers.md), pulses and timers in the same image.
