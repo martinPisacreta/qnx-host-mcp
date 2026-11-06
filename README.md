@@ -6,6 +6,8 @@ Real compilation and execution of the unchanged artifact inside QNX 8.0.0 x86_64
 
 A second example, [native QNX message passing](examples/msgpass/README.md), uses `ChannelCreate`, `ConnectAttach`, `MsgSend`, `MsgReceive` and `MsgReply` between two threads. It was compiled through MCP with `node scripts/compile-example.mjs examples/msgpass src/msgpass.c` and run on QNX 8.0 in QEMU with the expected output and exit status 0 ([evidence](evidence/qemu-run-msgpass-20261104/README.md)).
 
+A third example, a [QNX resource manager](examples/resmgr/README.md), registers `/dev/automata-echo` with `resmgr_attach` and a custom `io_read` handler, and the same process reads it back through `open` and `read`. It was compiled with qcc and run on QNX 8.0 in QEMU with the expected output and exit status 0 ([evidence](evidence/qemu-run-resmgr-20261106/README.md)).
+
 ## Configuration
 
 Requires Node.js 22 or later and the existing project dependencies. Configure an absolute QNX_MCP_WORKSPACE directory containing src/hello.c and a trusted PATH containing the QNX executables. The server resolves executables from absolute PATH entries and invokes them without a shell. It forwards selected host and QNX environment variables only.

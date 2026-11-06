@@ -1,0 +1,2 @@
+a478fd5399b484442ce4d1308e96a16feb0d71e7acca919d488bd115398dbd13  examples/resmgr/src/resmgr.c
+93428ce907a8a2c8b3998aab365a8ffdecfbd871e604cf8a2bb6c64abe4ef1d0  automata-resmgr

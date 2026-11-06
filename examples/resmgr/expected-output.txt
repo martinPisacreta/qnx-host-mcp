@@ -1,0 +1,2 @@
+resmgr: read 33 bytes: hello from a QNX resource manager
+resmgr: ok

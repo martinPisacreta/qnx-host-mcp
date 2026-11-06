@@ -1,0 +1,3 @@
+[perms=0755] automata-hello=/root/qnx-tutorial-run/automata-hello
+[perms=0755] automata-msgpass=/root/qnx-tutorial-run/automata-msgpass
+[perms=0755] automata-resmgr=/root/qnx-tutorial-run/automata-resmgr
