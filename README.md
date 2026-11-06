@@ -155,4 +155,4 @@ Publication note: project and validation paths in this document use neutral plac
 
 ## Tutorial
 
-Step by step, verified on 6 November 2026: [Run a QNX 8.0 C program in QEMU from Windows](tutorial/README.md) (WSL2 and Ubuntu 24.04, qcc, a custom mkqnximage image and a captured serial console, without hardware or a guest login), and [Part 2: native QNX message passing](tutorial/part2-message-passing.md) in the same image.
+Step by step, verified on 6 November 2026: [Run a QNX 8.0 C program in QEMU from Windows](tutorial/README.md) (WSL2 and Ubuntu 24.04, qcc, a custom mkqnximage image and a captured serial console, without hardware or a guest login), [Part 2: native QNX message passing](tutorial/part2-message-passing.md) and [Part 3: a resource manager](tutorial/part3-resource-manager.md) in the same image.

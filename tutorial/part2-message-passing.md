@@ -100,4 +100,4 @@ Check the guest exit marker in your own run; QEMU termination status is separate
 - [`verification-part2-2026-11-06.txt`](verification-part2-2026-11-06.txt): console output of the 6 November run of this part.
 - [`../evidence/qemu-run-msgpass-20261104/`](../evidence/qemu-run-msgpass-20261104/): the first run, compiled through the MCP server on 4 November 2026.
 
-Back to [Part 1](README.md).
+Back to [Part 1](README.md). Next: [Part 3](part3-resource-manager.md), a resource manager in the same image.
