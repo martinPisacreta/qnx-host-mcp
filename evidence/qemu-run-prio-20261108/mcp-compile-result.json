@@ -1,0 +1,12 @@
+{
+  "tool": "qnx_compile_c",
+  "source": "src/prioinherit.c",
+  "state": "succeeded",
+  "exitCode": 0,
+  "artifact": {
+    "path": "build/b54a12cc67b3cd958ec082c6a7cd7917/program",
+    "sizeBytes": 18560,
+    "sha256": "2020c2c26cb7ec48ea95dc9992144aafa0437e3e2ca0a1bd12ac1b6e23bcf077",
+    "independentlyVerified": true
+  }
+}

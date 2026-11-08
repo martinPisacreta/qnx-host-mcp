@@ -12,6 +12,8 @@ A fourth example, [native QNX pulses and timers](examples/pulses/README.md), arm
 
 A fifth example, [native QNX registered events](examples/events/README.md), shows the "reply now, notify later" pattern: a client registers a pulse event with `MsgRegisterEvent`, the server replies at once, checks it with `MsgVerifyEvent` and later delivers it with `MsgDeliverEvent`. It was compiled through MCP with `node scripts/compile-example.mjs examples/events src/events.c` and run on QNX 8.0 in QEMU with the expected output and exit status 0 ([evidence](evidence/qemu-run-events-20261106/README.md)).
 
+A sixth example, [native QNX message priority inheritance](examples/prioinherit/README.md), shows that a server thread receiving a message runs at the priority of the sending client, and that a channel created with `_NTO_CHF_FIXED_PRIORITY` keeps the server at its own priority. It was compiled through MCP with `node scripts/compile-example.mjs examples/prioinherit src/prioinherit.c` and run on QNX 8.0 in QEMU with the expected output and exit status 0 ([evidence](evidence/qemu-run-prio-20261108/README.md)).
+
 ## Start here
 
 QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and compiling workspace C sources with fixed arguments.
@@ -24,18 +26,20 @@ QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and 
 | [Tutorial: Part 3](tutorial/part3-resource-manager.md) | A resource manager accessed with ordinary file operations | [Recorded run](evidence/qemu-run-resmgr-20261106/) |
 | [Tutorial: Part 4](tutorial/part4-pulses-timers.md) | A periodic timer that delivers pulses to a channel | [Recorded run](evidence/qemu-run-pulses-20261106/) |
 | [Tutorial: Part 5](tutorial/part5-registered-events.md) | A server that replies at once and notifies the client later with a registered event | [Recorded run](evidence/qemu-run-events-20261106/) |
+| [Tutorial: Part 6](tutorial/part6-priority-inheritance.md) | A server thread that runs at the priority of the client it is serving | [Recorded run](evidence/qemu-run-prio-20261108/) |
 | [Hello example](examples/hello/) | QNX-target C compilation and guest execution | [Recorded run](evidence/qemu-run-20261103/) |
 | [Message-passing example](examples/msgpass/) | `ChannelCreate`, `ConnectAttach`, `MsgSend`, `MsgReceive`, `MsgReply` | [Recorded run](evidence/qemu-run-msgpass-20261104/) |
 | [Resource-manager example](examples/resmgr/) | `resmgr_attach`, custom `io_read`, ordinary `open` and `read` | [Recorded run](evidence/qemu-run-resmgr-20261106/) |
 | [Pulses and timers example](examples/pulses/) | `SIGEV_PULSE_INIT`, `timer_create`, `timer_settime`, `MsgReceivePulse` | [Recorded run](evidence/qemu-run-pulses-20261106/) |
 | [Registered events example](examples/events/) | `MsgRegisterEvent`, `MsgVerifyEvent`, `MsgDeliverEvent`, `MsgUnregisterEvent` | [Recorded run](evidence/qemu-run-events-20261106/) |
+| [Priority inheritance example](examples/prioinherit/) | `SchedGet`, `sched_curpriority`, `_NTO_CHF_FIXED_PRIORITY`, `SCHED_RR` threads | [Recorded run](evidence/qemu-run-prio-20261108/) |
 
 ### Try it
 
 1. Prepare Node.js 22 or later and the existing project dependencies; load the licensed QNX SDK environment for real compilation.
 2. Follow [Configuration](#configuration): set an absolute `QNX_MCP_WORKSPACE` containing `src/hello.c`, provide a trusted compiler `PATH`, and configure the stdio MCP client.
 3. From the repository root, run `npm run smoke:fake` for simulated validation or `npm run smoke` with the SDK environment loaded for real compilation and artifact verification.
-4. Follow [Tutorial Part 1](tutorial/README.md) for the separate SDK image and QEMU workflow, then continue with Parts 2 to 5 above.
+4. Follow [Tutorial Part 1](tutorial/README.md) for the separate SDK image and QEMU workflow, then continue with Parts 2 to 6 above.
 
 The compilation smoke does not execute the artifact; MCP image lifecycle tools remain blocked with `UNSAFE_CONFIGURATION`.
 
@@ -186,4 +190,4 @@ Publication note: project and validation paths in this document use neutral plac
 
 ## Tutorial
 
-Step by step, verified on 6 November 2026: [Run a QNX 8.0 C program in QEMU from Windows](tutorial/README.md) (WSL2 and Ubuntu 24.04, qcc, a custom mkqnximage image and a captured serial console, without hardware or a guest login), [Part 2: native QNX message passing](tutorial/part2-message-passing.md) [Part 3: a resource manager](tutorial/part3-resource-manager.md) [Part 4: pulses and timers](tutorial/part4-pulses-timers.md) and [Part 5: registered events](tutorial/part5-registered-events.md) in the same image.
+Step by step, verified on 6 November 2026: [Run a QNX 8.0 C program in QEMU from Windows](tutorial/README.md) (WSL2 and Ubuntu 24.04, qcc, a custom mkqnximage image and a captured serial console, without hardware or a guest login), [Part 2: native QNX message passing](tutorial/part2-message-passing.md), [Part 3: a resource manager](tutorial/part3-resource-manager.md), [Part 4: pulses and timers](tutorial/part4-pulses-timers.md), [Part 5: registered events](tutorial/part5-registered-events.md) and [Part 6: message priority inheritance](tutorial/part6-priority-inheritance.md) (verified on 8 November 2026) in the same image.

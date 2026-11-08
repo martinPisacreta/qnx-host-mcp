@@ -1,0 +1,2 @@
+6400b590ac18360af8982c9738f64e062944a75ffd0eef4a117f7a1b52694019  examples/prioinherit/src/prioinherit.c
+2020c2c26cb7ec48ea95dc9992144aafa0437e3e2ca0a1bd12ac1b6e23bcf077  automata-prio (direct qcc build placed at /proc/boot/automata-prio; byte-identical to the MCP artifact, same SHA-256)
