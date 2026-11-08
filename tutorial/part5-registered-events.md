@@ -91,4 +91,4 @@ For a registration, verification or delivery failure, keep the exact failing cal
 If only the earlier examples appear, check the image mapping, the startup block and the launcher's wait marker.
 The recorded guest had no network interface; networking and sshd startup messages are unrelated.
 
-Back to [Part 1](README.md), [Part 2](part2-message-passing.md), [Part 3](part3-resource-manager.md) or [Part 4](part4-pulses-timers.md).
+Back to [Part 1](README.md), [Part 2](part2-message-passing.md), [Part 3](part3-resource-manager.md) or [Part 4](part4-pulses-timers.md). Next: [Part 6](part6-priority-inheritance.md), message priority inheritance in the same image.
