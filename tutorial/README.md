@@ -207,6 +207,16 @@ QNX_MCP_RUN_EXIT=0
 
 Check the greeting and the guest program's exit status in your own console file. QEMU's termination status is separate from `QNX_MCP_RUN_EXIT=0`. The earlier historical console also recorded missing interfaces and an sshd memory fault. Those startup messages did not prevent the demonstrated program from running.
 
+### Check all six examples in one command
+
+When the image also carries the examples of Parts 2 to 6, one boot runs all six. From the repository root, check that boot's console file:
+
+```bash
+bash tutorial/check-run.sh /root/qnx-tutorial-run/output/qemu.out
+```
+
+[`check-run.sh`](check-run.sh) removes carriage returns, requires every line of each `examples/<example>/expected-output.txt` as a complete console line plus the example's exit marker with status 0, and prints `PASS` or `FAIL` per example. It exits with 0 only when all six pass. It reads an existing console file; it does not start QEMU or rerun anything. The result of a fresh boot on 9 November 2026 is in [`verification-all-2026-11-09.txt`](verification-all-2026-11-09.txt): `6/6 examples passed`.
+
 ## Common problems and cleanup
 
 - **Installation fails:** check activation; the recorded sequence required `-activateAll`.
@@ -223,6 +233,8 @@ The launcher stops and waits for the QEMU process it started. Preserve `output/q
 
 - [`hello.c`](hello.c): the exact program compiled in step 4.
 - [`run-qemu.sh`](run-qemu.sh): the boot and capture block from step 6, as one script.
+- [`check-run.sh`](check-run.sh): checks a console file for the expected output and exit status of all six examples.
+- [`verification-all-2026-11-09.txt`](verification-all-2026-11-09.txt): checker output and serial console of a fresh boot with all six examples on 9 November 2026.
 - [`part2-message-passing.md`](part2-message-passing.md): Part 2, native QNX message passing between a client and a server thread.
 - [`part3-resource-manager.md`](part3-resource-manager.md): Part 3, a resource manager at `/dev/automata-echo`, compiled directly and through MCP.
 - [`part4-pulses-timers.md`](part4-pulses-timers.md): Part 4, a `CLOCK_MONOTONIC` timer that delivers pulses received with `MsgReceivePulse`, compiled directly and through MCP.
