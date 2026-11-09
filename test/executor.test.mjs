@@ -63,11 +63,11 @@ function rejectsCode(action, code) {
   return assert.rejects(action, error => error.code === code);
 }
 
-test('advertises eight strict tools and the specified deadlines', () => {
-  assert.equal(TOOLS.length, 8);
-  assert.equal(new Set(TOOLS.map(tool => tool.name)).size, 8);
+test('advertises nine strict tools and the specified deadlines', () => {
+  assert.equal(TOOLS.length, 9);
+  assert.equal(new Set(TOOLS.map(tool => tool.name)).size, 9);
   for (const tool of TOOLS) assert.equal(tool.inputSchema.additionalProperties, false);
-  assert.deepEqual(Object.values(DEADLINES_MS), [30000, 120000, 900000, 60000, 20000, 30000]);
+  assert.deepEqual(Object.values(DEADLINES_MS), [30000, 120000, 240000, 900000, 60000, 20000, 30000]);
 });
 
 test('every tool rejects client flags and executable overrides', () => {

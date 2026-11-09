@@ -4,6 +4,7 @@ export const TERMINATION_GRACE_MS = 5000;
 export const DEADLINES_MS = Object.freeze({
   qnx_toolchain_info: 30000,
   qnx_compile_c: 120000,
+  qnx_run_artifact: 240000,
   qnx_image_build: 900000,
   qnx_image_start: 60000,
   qnx_image_ip: 20000,
@@ -29,6 +30,15 @@ const sourceSchema = {
   additionalProperties: false,
 };
 
+const runArtifactSchema = {
+  type: 'object',
+  properties: {
+    compileOperationId: { type: 'string', pattern: '^[a-f0-9]{32}$' },
+  },
+  required: ['compileOperationId'],
+  additionalProperties: false,
+};
+
 const operationSchema = {
   type: 'object',
   properties: {
@@ -48,6 +58,11 @@ export const TOOLS = [
     name: 'qnx_compile_c',
     description: 'Compile one workspace src/name.c file for QNX x86_64 with fixed compiler arguments. Never runs the resulting binary or accepts compiler flags. Deadline: 120 seconds.',
     inputSchema: sourceSchema,
+  },
+  {
+    name: 'qnx_run_artifact',
+    description: 'Run an artifact from a successful compilation created by this server in a private QEMU image with no emulated network adapter. Disabled by default. Accepts only a compilation operation ID. Guest console is limited to 32 KiB. Maximum total deadline: 240 seconds including cleanup.',
+    inputSchema: runArtifactSchema,
   },
   {
     name: 'qnx_image_build',

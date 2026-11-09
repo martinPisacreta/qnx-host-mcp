@@ -82,7 +82,7 @@ test('stdio initialization, discovery and rejected requests use MCP responses', 
   assert.equal(initialized.serverInfo.name, 'qnx-host-mcp');
   child.stdin.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) + '\n');
   const listed = await request('tools/list', {});
-  assert.equal(listed.tools.length, 8);
+  assert.equal(listed.tools.length, 9);
   for (const tool of listed.tools) {
     assert.equal(tool.inputSchema.additionalProperties, false);
   }

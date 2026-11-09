@@ -1,6 +1,8 @@
 import { captureOwnedGroup, captureOwnedDescendant, readOwnedProcessSockets, ownedProcessExists } from './proc-sockets.mjs';
 import { spawn } from 'node:child_process';
 import { loadImageConfig } from './image-config.mjs';
+import { loadRunConfig } from './run-config.mjs';
+import { open } from 'node:fs/promises';
 import { unsafeListeningPorts } from './net-check.mjs';
 import { constants, createReadStream } from 'node:fs';
 import { access, lstat, mkdir, readFile, realpath, stat } from 'node:fs/promises';
@@ -82,11 +84,15 @@ export class Executor {
       throw new ToolError('UNSAFE_CONFIGURATION', 'Invalid internal network observer.');
     }
     const imageConfig = await loadImageConfig(env);
-    return new Executor(root, safeEnvironment(env), { ...DEADLINES_MS, ...deadlines }, graceMs, imageConfig, imageNetworkSnapshot);
+    const runConfig = await loadRunConfig(env);
+    const executor = new Executor(root, safeEnvironment(env), { ...DEADLINES_MS, ...deadlines }, graceMs, imageConfig, imageNetworkSnapshot);
+    executor.runConfig = runConfig;
+    return executor;
   }
 
   constructor(root, env, deadlines, graceMs, imageConfig = Object.freeze({ version: 1, enabled: false }), imageNetworkSnapshot) {
     this.imageConfig = imageConfig;
+    this.runConfig = Object.freeze({ version: 1, enabled: false });
     this.imageNetworkSnapshot = imageNetworkSnapshot;
     this.images = new Map();
     this.root = root;
@@ -121,6 +127,9 @@ export class Executor {
       return { ...this.snapshot(operation), cancellationAccepted: true };
     }
     if (this.closed) throw new ToolError('UNSAFE_CONFIGURATION', 'The executor is shutting down.');
+    if (name === 'qnx_run_artifact' && !this.runConfig.enabled) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Artifact execution is disabled by operator configuration.');
+    }
     if (name.startsWith('qnx_image_')) {
       if (!this.imageConfig.enabled) {
         throw new ToolError('UNSAFE_CONFIGURATION', 'Image operations are disabled by operator configuration.');
@@ -131,7 +140,8 @@ export class Executor {
       // scope and loopback listeners have not yet been verified on the host.
       throw new ToolError('UNSAFE_CONFIGURATION', 'Image operations are disabled pending verified configuration, isolation and instance ownership.');
     }
-    const mutating = name === 'qnx_compile_c';
+    const runCompilation = name === 'qnx_run_artifact' ? this.getRunCompilation(args.compileOperationId) : null;
+    const mutating = name === 'qnx_compile_c' || name === 'qnx_run_artifact';
     if (this.mutatingOperation !== null ||
         [...this.operations.values()].some(item => !terminal.has(item.result.state))) {
       throw new ToolError('BUSY', 'Another mutating operation is still active.');
@@ -139,7 +149,7 @@ export class Executor {
     // Bound retained operation history. Never discard a running operation.
     if (this.operations.size >= 128) {
       for (const [id, operation] of this.operations) {
-        if (terminal.has(operation.result.state)) {
+        if (operation !== runCompilation && terminal.has(operation.result.state)) {
           this.operations.delete(id);
           break;
         }
@@ -148,6 +158,7 @@ export class Executor {
     }
     const id = operationId();
     const operation = {
+      name, artifactRecord: null, runCompilation,
       result: initialResult(id), child: null, stopReason: null,
       stdout: Buffer.alloc(0), stderr: Buffer.alloc(0),
       deadlineTimer: null, escalationTimer: null, done: null, mutating,
@@ -646,6 +657,716 @@ export class Executor {
     }
   }
 
+  getRunCompilation(compileOperationId) {
+    const compilation = this.getOperation(compileOperationId);
+    if (compilation.name !== 'qnx_compile_c' ||
+        compilation.result.state !== 'succeeded' || !compilation.artifactRecord) {
+      throw new ToolError('INVALID_INPUT', 'A successful compilation from this server is required.');
+    }
+    return compilation;
+  }
+
+  async copyRegisteredRunArtifact(operation, compilation, directory) {
+    const record = compilation.artifactRecord;
+    const expected = path.join(this.root, 'build', compilation.result.operationId, 'program');
+    if (!record || record.filename !== expected || record.architecture !== 'x86_64') {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'The registered artifact is unavailable.');
+    }
+    let source;
+    let destination;
+    const unchanged = metadata => metadata.isFile() &&
+      metadata.dev === record.dev && metadata.ino === record.ino &&
+      metadata.size === record.size && metadata.mtimeMs === record.mtimeMs &&
+      metadata.ctimeMs === record.ctimeMs;
+    try {
+      this.checkpoint(operation);
+      let current = this.root;
+      for (const component of ['build', compilation.result.operationId]) {
+        current = path.join(current, component);
+        const metadata = await lstat(current);
+        if (!metadata.isDirectory() || metadata.isSymbolicLink() ||
+            await realpath(current) !== current) {
+          throw new ToolError('UNSAFE_CONFIGURATION', 'Artifact directories must be controlled directories.');
+        }
+      }
+      const metadata = await lstat(expected);
+      if (metadata.isSymbolicLink() || !unchanged(metadata) ||
+          await realpath(expected) !== expected) {
+        throw new ToolError('UNSAFE_CONFIGURATION', 'The registered artifact was replaced or modified.');
+      }
+      source = await open(expected, constants.O_RDONLY |
+        (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0));
+      if (!unchanged(await source.stat())) {
+        throw new ToolError('UNSAFE_CONFIGURATION', 'The registered artifact changed before copying.');
+      }
+      const target = path.join(directory, 'automata-artifact');
+      destination = await open(target, constants.O_WRONLY | constants.O_CREAT |
+        constants.O_EXCL | (constants.O_NOFOLLOW ?? 0), 0o700);
+      const hash = createHash('sha256');
+      const buffer = Buffer.alloc(65536);
+      let copied = 0;
+      while (true) {
+        this.checkpoint(operation);
+        const { bytesRead } = await source.read(buffer, 0, buffer.length, null);
+        if (!bytesRead) break;
+        copied += bytesRead;
+        if (copied > record.size) {
+          throw new ToolError('UNSAFE_CONFIGURATION', 'The artifact grew during copying.');
+        }
+        hash.update(buffer.subarray(0, bytesRead));
+        let written = 0;
+        while (written < bytesRead) {
+          this.checkpoint(operation);
+          const result = await destination.write(buffer, written, bytesRead - written, null);
+          if (result.bytesWritten <= 0) throw new Error('Incomplete artifact write.');
+          written += result.bytesWritten;
+        }
+      }
+      if (copied !== record.size || hash.digest('hex') !== record.sha256 ||
+          !unchanged(await source.stat())) {
+        throw new ToolError('UNSAFE_CONFIGURATION', 'Artifact integrity verification failed.');
+      }
+      await destination.sync();
+      if (await fileHash(target) !== record.sha256) {
+        throw new ToolError('UNSAFE_CONFIGURATION', 'Copied artifact integrity verification failed.');
+      }
+      this.checkpoint(operation);
+    } catch (error) {
+      if (error instanceof ToolError) throw error;
+      throw new ToolError('UNSAFE_CONFIGURATION', 'The registered artifact could not be copied safely.');
+    } finally {
+      const closed = await Promise.allSettled([source?.close(), destination?.close()]);
+      if (closed.some(result => result.status === 'rejected')) {
+        throw new ToolError('UNSAFE_CONFIGURATION', 'Artifact descriptors could not be closed.');
+      }
+    }
+  }
+
+  async copyRunTemplate(operation, source, destination, topLevel = true) {
+    this.checkpoint(operation);
+    const { readdir } = await import('node:fs/promises');
+    const entries = await readdir(source, { withFileTypes: true });
+    for (const entry of entries) {
+      this.checkpoint(operation);
+      if (topLevel && entry.name === 'output') continue;
+      const input = path.join(source, entry.name);
+      const output = path.join(destination, entry.name);
+      const before = await lstat(input);
+      if (before.isSymbolicLink() || await realpath(input) !== input) {
+        throw new ToolError('UNSAFE_CONFIGURATION', 'Template links are forbidden.');
+      }
+      if (before.isDirectory()) {
+        await mkdir(output, { mode: 0o700 });
+        await this.copyRunTemplate(operation, input, output, false);
+        continue;
+      }
+      if (!before.isFile()) {
+        throw new ToolError('UNSAFE_CONFIGURATION', 'Template entries must be regular files or directories.');
+      }
+      let reader;
+      let writer;
+      try {
+        reader = await open(input, constants.O_RDONLY |
+          (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0));
+        const unchanged = value => value.isFile() &&
+          value.dev === before.dev && value.ino === before.ino &&
+          value.size === before.size && value.mtimeMs === before.mtimeMs &&
+          value.ctimeMs === before.ctimeMs;
+        if (!unchanged(await reader.stat())) {
+          throw new ToolError('UNSAFE_CONFIGURATION', 'Template changed before copying.');
+        }
+        writer = await open(output, constants.O_WRONLY | constants.O_CREAT |
+          constants.O_EXCL | (constants.O_NOFOLLOW ?? 0),
+          (before.mode & 0o111) | 0o600);
+        const buffer = Buffer.alloc(65536);
+        let copied = 0;
+        while (true) {
+          this.checkpoint(operation);
+          const { bytesRead } = await reader.read(buffer, 0, buffer.length, null);
+          if (!bytesRead) break;
+          copied += bytesRead;
+          if (copied > before.size) {
+            throw new ToolError('UNSAFE_CONFIGURATION', 'Template file grew during copying.');
+          }
+          let offset = 0;
+          while (offset < bytesRead) {
+            this.checkpoint(operation);
+            const { bytesWritten } = await writer.write(buffer, offset, bytesRead - offset, null);
+            if (bytesWritten <= 0) throw new Error('Incomplete template copy.');
+            offset += bytesWritten;
+          }
+        }
+        if (copied !== before.size || !unchanged(await reader.stat())) {
+          throw new ToolError('UNSAFE_CONFIGURATION', 'Template changed during copying.');
+        }
+      } finally {
+        const closed = await Promise.allSettled([reader?.close(), writer?.close()]);
+        if (closed.some(item => item.status === 'rejected')) {
+          throw new ToolError('UNSAFE_CONFIGURATION', 'Template descriptors could not be closed.');
+        }
+      }
+    }
+  }
+
+  async prepareRunDirectory(operation, compilation) {
+    if (!this.runConfig.enabled) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Artifact execution is disabled by operator configuration.');
+    }
+    this.checkpoint(operation);
+    const { writeFile } = await import('node:fs/promises');
+    const template = this.runConfig.templateDir;
+    const runs = path.join(this.root, 'runs');
+    // The generated IFS snippet contains an unquoted host filename.
+    // Restrict its alphabet rather than allowing buildfile metacharacters.
+    if (!/^[A-Za-z0-9_./-]+$/.test(runs)) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Run directory requires a buildfile-safe absolute path.');
+    }
+    if (within(template, runs) || within(runs, template)) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Template and run directories must not overlap.');
+    }
+    const templateInfo = await lstat(template);
+    if (!templateInfo.isDirectory() || templateInfo.isSymbolicLink() ||
+        await realpath(template) !== template) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Template must be a canonical directory without links.');
+    }
+    this.checkpoint(operation);
+    try { await mkdir(runs, { mode: 0o700 }); }
+    catch (error) { if (error.code !== 'EEXIST') throw error; }
+    const runsInfo = await lstat(runs);
+    if (!runsInfo.isDirectory() || runsInfo.isSymbolicLink() ||
+        await realpath(runs) !== runs) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Runs must be a controlled workspace directory.');
+    }
+    const directory = path.join(runs, operation.result.operationId);
+    this.checkpoint(operation);
+    await mkdir(directory, { mode: 0o700 });
+    // Record immediately so the run lifecycle can clean up partial preparation.
+    operation.runDirectory = directory;
+    const owned = await lstat(directory);
+    operation.runDirectoryIdentity = Object.freeze({ dev: owned.dev, ino: owned.ino });
+    if (await realpath(directory) !== directory) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Run directory escaped its assigned path.');
+    }
+    await this.copyRunTemplate(operation, template, directory);
+    await this.copyRegisteredRunArtifact(operation, compilation, directory);
+    const snippets = path.join(directory, 'local', 'snippets');
+    await mkdir(snippets, { recursive: true, mode: 0o700 });
+    const nonce = randomBytes(16).toString('hex');
+    operation.runNonce = nonce;
+    this.checkpoint(operation);
+    await writeFile(path.join(snippets, 'ifs_files.custom'),
+      `[perms=0755] automata-artifact=${directory}/automata-artifact
+`,
+      { mode: 0o600 });
+    await writeFile(path.join(snippets, 'post_start.custom'),
+      `echo "QNX_RUN_${nonce}_BEGIN"
+/proc/boot/automata-artifact
+echo "QNX_RUN_${nonce}_EXIT=$?"
+`,
+      { mode: 0o600 });
+    this.checkpoint(operation);
+    return directory;
+  }
+
+  consumeRunConsole(operation, chunk, final = false) {
+    const parser = operation.runConsoleParser ??= {
+      retained: Buffer.alloc(0), pending: Buffer.alloc(0),
+      bytes: 0, began: false, exited: false, exitCode: null,
+    };
+    const fail = message => {
+      throw new ToolError('COMMAND_FAILED', message);
+    };
+    parser.bytes += chunk.length;
+    operation.result.consoleBytesObserved = parser.bytes;
+    const remaining = OUTPUT_LIMIT_BYTES - parser.retained.length;
+    if (chunk.length > remaining) operation.result.consoleTruncated = true;
+    if (remaining > 0 && chunk.length) {
+      parser.retained = Buffer.concat([parser.retained, chunk.subarray(0, remaining)]);
+    }
+    operation.result.console = boundedText(parser.retained);
+    if (parser.bytes > 8 * 1024 * 1024) {
+      fail('Guest console exceeded the monitored 8 MiB limit.');
+    }
+    const prefix = `QNX_RUN_${operation.runNonce}_`;
+    const line = bytes => {
+      if (bytes.length && bytes[bytes.length - 1] === 13) {
+        bytes = bytes.subarray(0, bytes.length - 1);
+      }
+      const text = bytes.toString('utf8');
+      if (text === `${prefix}BEGIN`) {
+        if (parser.began || parser.exited) fail('Duplicate or misplaced guest BEGIN marker.');
+        parser.began = true;
+        return;
+      }
+      if (!text.startsWith(prefix)) return;
+      const value = text.slice(prefix.length);
+      if (!/^EXIT=(0|[1-9][0-9]{0,2})$/.test(value)) {
+        fail('Malformed guest execution marker.');
+      }
+      const code = Number(value.slice(5));
+      if (!parser.began || parser.exited || code > 255) {
+        fail('Duplicate, misplaced or invalid guest EXIT marker.');
+      }
+      parser.exited = true;
+      parser.exitCode = code;
+    };
+    let offset = 0;
+    while (offset < chunk.length) {
+      const newline = chunk.indexOf(10, offset);
+      const end = newline === -1 ? chunk.length : newline;
+      const segment = chunk.subarray(offset, end);
+      if (parser.pending.length + segment.length > 4096) {
+        fail('Guest console line exceeded the parser limit.');
+      }
+      parser.pending = Buffer.concat([parser.pending, segment]);
+      if (newline === -1) break;
+      line(parser.pending);
+      parser.pending = Buffer.alloc(0);
+      offset = newline + 1;
+    }
+    if (final && parser.pending.length) {
+      // A marker requires a complete line; a partial final marker is not proof
+      // that the guest program completed. Ordinary partial output is retained.
+      if (parser.pending.toString('utf8').startsWith(prefix)) {
+        fail('Guest execution marker was not terminated by a newline.');
+      }
+      parser.pending = Buffer.alloc(0);
+    }
+    return { completed: parser.exited, exitCode: parser.exitCode };
+  }
+
+  async verifyRunDirectory(operation) {
+    const expected = path.join(this.root, 'runs', operation.result.operationId);
+    const identity = operation.runDirectoryIdentity;
+    if (operation.runDirectory !== expected || !identity ||
+        !/^[a-f0-9]{32}$/.test(operation.result.operationId)) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Run directory ownership is unavailable.');
+    }
+    const runs = path.dirname(expected);
+    const parent = await lstat(runs);
+    if (!parent.isDirectory() || parent.isSymbolicLink() ||
+        await realpath(runs) !== runs) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Run parent directory changed.');
+    }
+    const metadata = await lstat(expected);
+    if (!metadata.isDirectory() || metadata.isSymbolicLink() ||
+        metadata.dev !== identity.dev || metadata.ino !== identity.ino ||
+        await realpath(expected) !== expected) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Run directory identity changed.');
+    }
+    return expected;
+  }
+
+  async validateRunImageOutputs(operation) {
+    this.checkpoint(operation);
+    const directory = await this.verifyRunDirectory(operation);
+    const output = path.join(directory, 'output');
+    const metadata = await lstat(output);
+    if (!metadata.isDirectory() || metadata.isSymbolicLink() ||
+        await realpath(output) !== output) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Image output must be a private regular directory.');
+    }
+    for (const name of ['disk-qemu.vmdk', 'ifs.bin']) {
+      this.checkpoint(operation);
+      const filename = path.join(output, name);
+      let handle;
+      try {
+        const before = await lstat(filename);
+        if (!before.isFile() || before.isSymbolicLink() ||
+            before.size === 0 || before.nlink !== 1 ||
+            await realpath(filename) !== filename) {
+          throw new ToolError('UNSAFE_CONFIGURATION', 'Image output must be a nonempty private regular file.');
+        }
+        handle = await open(filename, constants.O_RDONLY |
+          (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0));
+        const opened = await handle.stat();
+        if (!opened.isFile() || opened.dev !== before.dev ||
+            opened.ino !== before.ino || opened.size !== before.size ||
+            opened.mtimeMs !== before.mtimeMs || opened.ctimeMs !== before.ctimeMs ||
+            opened.nlink !== 1) {
+          throw new ToolError('UNSAFE_CONFIGURATION', 'Image output changed during validation.');
+        }
+      } finally {
+        if (handle) await handle.close();
+      }
+    }
+    this.checkpoint(operation);
+  }
+
+  async removeOwnedRunDirectory(operation) {
+    if (!operation.runDirectory) return;
+    // The lifecycle sets this only after verifying termination of every
+    // process group it created, including the image builder.
+    if (operation.runProcessesConfirmedGone !== true) {
+      throw new ToolError('CANCEL_FAILED', 'Process cleanup must be confirmed before removing run files.');
+    }
+    try {
+      const directory = await this.verifyRunDirectory(operation);
+      const { rm } = await import('node:fs/promises');
+      await rm(directory, { recursive: true, force: false });
+      try {
+        await lstat(directory);
+      } catch (error) {
+        if (error.code === 'ENOENT') {
+          operation.runDirectory = null;
+          operation.runDirectoryIdentity = null;
+          return;
+        }
+        throw error;
+      }
+      throw new Error('Run directory remains present.');
+    } catch {
+      throw new ToolError('CANCEL_FAILED', 'Private run directory cleanup could not be confirmed.');
+    }
+  }
+
+  runQemuArguments() {
+    return [
+      '-smp', '2', '-cpu', 'max', '-m', '1G',
+      '-drive', 'file=output/disk-qemu.vmdk,if=ide,id=drv0',
+      '-kernel', 'output/ifs.bin',
+      '-display', 'none', '-monitor', 'none', '-nic', 'none',
+      '-serial', 'file:output/qemu.out', '-pidfile', 'output/qemu.pid',
+      '-object', 'rng-random,filename=/dev/urandom,id=rng0',
+      '-device', 'virtio-rng-pci,rng=rng0',
+    ];
+  }
+
+  async launchRunProcess(operation, executable, argv, phase) {
+    this.checkpoint(operation);
+    if (process.platform !== 'linux' ||
+        !['build', 'guest'].includes(phase)) {
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Run execution requires Linux process ownership.');
+    }
+    const directory = await this.verifyRunDirectory(operation);
+    this.checkpoint(operation);
+    const instance = {
+      phase, child: null, launcher: null,
+      spawned: false, exited: false, closed: false,
+      exitCode: null, signal: null, spawnError: null,
+    };
+    operation.runProcesses ??= [];
+    operation.runProcesses.push(instance);
+    operation.runProcessesConfirmedGone = false;
+    let child;
+    try {
+      child = spawn(executable, argv, {
+        cwd: directory, env: this.env, shell: false,
+        windowsHide: true, detached: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+    } catch {
+      instance.closed = true;
+      throw new ToolError('TOOL_MISSING', 'The configured run executable could not start.');
+    }
+    instance.child = child;
+    child.stdout.on('data', chunk => this.capture(operation, 'stdout', chunk));
+    child.stderr.on('data', chunk => this.capture(operation, 'stderr', chunk));
+    child.on('error', error => { instance.spawnError = error; });
+    child.once('exit', (code, signal) => {
+      instance.exited = true;
+      instance.exitCode = Number.isInteger(code) ? code : null;
+      instance.signal = signal;
+      if (phase === 'build') operation.result.buildExitCode = instance.exitCode;
+      else operation.result.qemuExitCode = instance.exitCode;
+    });
+    instance.done = new Promise(resolve => {
+      child.once('close', () => {
+        instance.closed = true;
+        resolve();
+      });
+    });
+    await new Promise((resolve, reject) => {
+      child.once('spawn', () => { instance.spawned = true; resolve(); });
+      child.once('error', error => reject(new ToolError(
+        error.code === 'ENOENT' ? 'TOOL_MISSING' : 'UNSAFE_CONFIGURATION',
+        'The configured run executable could not start.')));
+    });
+    // Register ownership immediately. Never use the guest pidfile as authority,
+    // and do not expose this child to generic cancellation by numeric PID.
+    try {
+      instance.launcher = await captureOwnedGroup(child.pid);
+    } catch {
+      operation.runCleanupBlocked = true;
+      throw new ToolError('CANCEL_FAILED', 'Run process ownership could not be established.');
+    }
+    this.checkpoint(operation);
+    return instance;
+  }
+
+  async cleanupRunProcesses(operation, expires = performance.now() + 30000) {
+    const { readdir } = await import('node:fs/promises');
+    const pause = () => new Promise(resolve => setTimeout(resolve, 20));
+    const checkDeadline = () => {
+      if (performance.now() >= expires) {
+        throw new ToolError('CANCEL_FAILED', 'Run process cleanup deadline expired.');
+      }
+    };
+    const identity = async pid => {
+      checkDeadline();
+      let text;
+      try { text = await readFile(`/proc/${pid}/stat`, 'utf8'); }
+      catch (error) {
+        if (error.code === 'ENOENT' || error.code === 'ESRCH') return null;
+        throw error;
+      }
+      const end = text.lastIndexOf(')');
+      const fields = text.slice(end + 1).trim().split(/\s+/);
+      if (end < 0 || !text.startsWith(`${pid} (`) || fields.length < 20 ||
+          !/^[0-9]+$/.test(fields[19])) throw new Error('Invalid process identity.');
+      const group = Number(fields[2]);
+      const session = Number(fields[3]);
+      if (!Number.isSafeInteger(group) || !Number.isSafeInteger(session)) {
+        throw new Error('Invalid process group.');
+      }
+      return { pid, group, session, startTime: fields[19], state: fields[0] };
+    };
+    const same = (left, right) => left && right &&
+      left.pid === right.pid && left.group === right.group &&
+      left.session === right.session && left.startTime === right.startTime;
+    const live = token => token && !['Z', 'X', 'x'].includes(token.state);
+    const members = async launcher => {
+      checkDeadline();
+      const leader = await identity(launcher.pid);
+      if (leader && !same(leader, launcher)) throw new Error('Process identity changed.');
+      const entries = await readdir('/proc');
+      if (entries.length > 32768) throw new Error('Process observation limit exceeded.');
+      const found = [];
+      for (const entry of entries) {
+        checkDeadline();
+        if (!/^[1-9][0-9]*$/.test(entry)) continue;
+        const pid = Number(entry);
+        if (!Number.isSafeInteger(pid) || pid <= 1 || pid === process.pid) continue;
+        const token = await identity(pid);
+        if (!token || (token.group !== launcher.group && token.session !== launcher.session)) continue;
+        // An owned process that escaped its original group requires operator
+        // intervention; never broaden signalling to another process group.
+        if (token.group !== launcher.group || token.session !== launcher.session ||
+            BigInt(token.startTime) < BigInt(launcher.startTime)) {
+          throw new Error('Process ownership could not be confirmed.');
+        }
+        if (live(token)) found.push(token);
+        if (found.length > 1024) throw new Error('Owned process observation limit exceeded.');
+      }
+      return found;
+    };
+    const signalMembers = async (tokens, signal) => {
+      for (const token of tokens) {
+        const current = await identity(token.pid);
+        if (!current) continue;
+        if (!same(current, token)) throw new Error('Process identity changed before signalling.');
+        if (!live(current)) continue;
+        try { process.kill(token.pid, signal); }
+        catch (error) { if (error.code !== 'ESRCH') throw error; }
+      }
+    };
+    operation.runProcessesConfirmedGone = false;
+    try {
+      for (const instance of operation.runProcesses ?? []) {
+        if (!instance.spawned) {
+          if (!instance.closed || instance.child?.pid) {
+            throw new Error('Process launch outcome is uncertain.');
+          }
+          continue;
+        }
+        const launcher = instance.launcher;
+        if (!launcher || launcher.pid !== launcher.group ||
+            launcher.pid !== launcher.session || launcher.pid <= 1 ||
+            launcher.pid === process.pid) {
+          throw new Error('Run process ownership is unavailable.');
+        }
+        const forceAt = performance.now() + this.graceMs;
+        let termSent = false;
+        while (true) {
+          checkDeadline();
+          const remaining = await members(launcher);
+          if (remaining.length === 0 && instance.closed) break;
+          if (!termSent || performance.now() >= forceAt) {
+            await signalMembers(remaining, termSent ? 'SIGKILL' : 'SIGTERM');
+            termSent = true;
+          }
+          await pause();
+        }
+      }
+      operation.runProcessesConfirmedGone = true;
+      operation.runCleanupBlocked = false;
+    } catch {
+      operation.runCleanupBlocked = true;
+      throw new ToolError('CANCEL_FAILED', 'Owned run process termination could not be confirmed.');
+    }
+  }
+
+  async waitRunBuild(operation, instance) {
+    while (!instance.closed) {
+      this.checkpoint(operation);
+      await new Promise(resolve => setTimeout(resolve, 20));
+    }
+    this.checkpoint(operation);
+    if (instance.spawnError || instance.exitCode !== 0 || instance.signal) {
+      throw new ToolError('COMMAND_FAILED', 'Private image construction failed; inspect the bounded host output.');
+    }
+  }
+
+  async readRunConsole(operation, final = false) {
+    const filename = path.join(operation.runDirectory, 'output', 'qemu.out');
+    let handle;
+    try {
+      let before;
+      try { before = await lstat(filename); }
+      catch (error) {
+        if (error.code === 'ENOENT' && !operation.runConsoleIdentity) {
+          return { completed: false, exitCode: null };
+        }
+        throw error;
+      }
+      if (!before.isFile() || before.isSymbolicLink() || before.nlink !== 1 ||
+          await realpath(filename) !== filename || before.size > 8 * 1024 * 1024) {
+        throw new ToolError('UNSAFE_CONFIGURATION', 'Guest console file is unsafe or exceeds its monitored limit.');
+      }
+      const registered = operation.runConsoleIdentity;
+      if (registered && (registered.dev !== before.dev || registered.ino !== before.ino)) {
+        throw new ToolError('UNSAFE_CONFIGURATION', 'Guest console file was replaced.');
+      }
+      handle = await open(filename, constants.O_RDONLY |
+        (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0));
+      const opened = await handle.stat();
+      if (!opened.isFile() || opened.dev !== before.dev || opened.ino !== before.ino || opened.nlink !== 1) {
+        throw new ToolError('UNSAFE_CONFIGURATION', 'Guest console identity changed while opening.');
+      }
+      operation.runConsoleIdentity ??= { dev: opened.dev, ino: opened.ino };
+      operation.runConsoleOffset ??= 0;
+      if (opened.size < operation.runConsoleOffset || opened.size > 8 * 1024 * 1024) {
+        throw new ToolError('COMMAND_FAILED', 'Guest console was truncated or exceeded its monitored limit.');
+      }
+      const buffer = Buffer.alloc(65536);
+      while (operation.runConsoleOffset < opened.size) {
+        if (!final) this.checkpoint(operation);
+        const length = Math.min(buffer.length, opened.size - operation.runConsoleOffset);
+        const { bytesRead } = await handle.read(buffer, 0, length, operation.runConsoleOffset);
+        if (!bytesRead) throw new ToolError('COMMAND_FAILED', 'Guest console changed while reading.');
+        operation.runConsoleOffset += bytesRead;
+        this.consumeRunConsole(operation, buffer.subarray(0, bytesRead));
+      }
+      return this.consumeRunConsole(operation, Buffer.alloc(0), final);
+    } catch (error) {
+      if (error instanceof ToolError) throw error;
+      throw new ToolError('UNSAFE_CONFIGURATION', 'Guest console could not be read safely.');
+    } finally {
+      if (handle) await handle.close();
+    }
+  }
+
+  async waitRunGuest(operation, instance) {
+    while (true) {
+      this.checkpoint(operation);
+      const result = await this.readRunConsole(operation);
+      if (result.completed) return result.exitCode;
+      if (instance.closed) {
+        const last = await this.readRunConsole(operation, true);
+        if (last.completed) return last.exitCode;
+        throw new ToolError('COMMAND_FAILED', 'QEMU closed before a valid guest completion marker.');
+      }
+      await new Promise(resolve => setTimeout(resolve, 20));
+    }
+  }
+
+  async runArtifact(operation) {
+    const started = performance.now();
+    const timings = { preparationMs: null, buildMs: null, guestMs: null, cleanupMs: null, totalMs: null };
+    Object.assign(operation.result, {
+      console: '', consoleTruncated: false, consoleBytesObserved: 0,
+      buildExitCode: null, qemuExitCode: null, timings,
+    });
+    // Preserve an asynchronous queued response before preparation begins.
+    await Promise.resolve();
+    operation.result.state = 'running';
+    let failure = null;
+    let guestExitCode = null;
+    let qemu = null;
+    const phase = async (field, limit, action) => {
+      this.checkpoint(operation);
+      const began = performance.now();
+      const timer = setTimeout(() => this.requestStop(operation, 'TIMEOUT'), limit);
+      try {
+        const result = await action();
+        this.checkpoint(operation);
+        if (performance.now() - began >= limit) {
+          this.requestStop(operation, 'TIMEOUT');
+          this.checkpoint(operation);
+        }
+        return result;
+      } finally {
+        clearTimeout(timer);
+        timings[field] = Math.round(performance.now() - began);
+      }
+    };
+    // Reserve the final 30 seconds of the total deadline for cleanup.
+    operation.deadlineTimer = setTimeout(() => this.requestStop(operation, 'TIMEOUT'),
+      Math.max(1, this.deadlines.qnx_run_artifact - 30000));
+    try {
+      if (process.platform !== 'linux') {
+        throw new ToolError('UNSAFE_CONFIGURATION', 'Artifact execution requires Linux process ownership.');
+      }
+      let builder;
+      await phase('preparationMs', 30000, async () => {
+        builder = await findExecutable('mkqnximage', this.env);
+        qemu = await findExecutable('qemu-system-x86_64', this.env);
+        await this.prepareRunDirectory(operation, operation.runCompilation);
+      });
+      await phase('buildMs', 120000, async () => {
+        const instance = await this.launchRunProcess(operation, builder, ['--noprompt', '--build'], 'build');
+        await this.waitRunBuild(operation, instance);
+        // Confirm the builder and its group are gone before trusting its outputs.
+        await this.cleanupRunProcesses(operation, performance.now() + 30000);
+        await this.validateRunImageOutputs(operation);
+      });
+      guestExitCode = await phase('guestMs', 60000, async () => {
+        const instance = await this.launchRunProcess(operation, qemu, this.runQemuArguments(), 'guest');
+        return this.waitRunGuest(operation, instance);
+      });
+      if (operation.result.truncated) {
+        throw new ToolError('OUTPUT_LIMIT', 'Host diagnostic output exceeded its retained limit.');
+      }
+    } catch (error) {
+      failure = error instanceof ToolError ? error :
+        new ToolError('INTERNAL_ERROR', 'Artifact execution could not complete.');
+    } finally {
+      clearTimeout(operation.deadlineTimer);
+      operation.deadlineTimer = null;
+      const cleanupStarted = performance.now();
+      try {
+        await this.cleanupRunProcesses(operation, cleanupStarted + 30000);
+        if (operation.runConsoleIdentity) {
+          try {
+            const last = await this.readRunConsole(operation, true);
+            if (last.completed) guestExitCode = last.exitCode;
+          } catch (error) {
+            failure = error instanceof ToolError ? error :
+              new ToolError('INTERNAL_ERROR', 'Final guest console validation failed.');
+            guestExitCode = null;
+          }
+        }
+        await this.removeOwnedRunDirectory(operation);
+      } catch {
+        operation.runCleanupBlocked = true;
+        failure = new ToolError('CANCEL_FAILED', 'Run cleanup could not be confirmed; further mutating operations remain blocked.');
+      }
+      timings.cleanupMs = Math.round(performance.now() - cleanupStarted);
+      timings.totalMs = Math.round(performance.now() - started);
+      operation.result.exitCode = guestExitCode;
+      const code = operation.runCleanupBlocked ? 'CANCEL_FAILED' :
+        operation.stopReason ?? failure?.code ?? null;
+      operation.result.errorCode = code;
+      operation.result.state = code === 'TIMEOUT' ? 'timed_out' :
+        code === 'CANCELLED' ? 'cancelled' :
+        code || guestExitCode !== 0 ? 'failed' : 'succeeded';
+      if (failure) operation.result.message = failure.message;
+      if (!operation.runCleanupBlocked && this.mutatingOperation === operation.result.operationId) {
+        this.mutatingOperation = null;
+      }
+    }
+  }
+
   async checkedPath(relative) {
     let resolved;
     try { resolved = await realpath(path.join(this.root, relative)); }
@@ -669,6 +1390,7 @@ export class Executor {
   }
 
   async run(operation, name, args) {
+    if (name === 'qnx_run_artifact') return this.runArtifact(operation);
     operation.result.state = 'running';
     operation.deadlineTimer = setTimeout(() => {
       try { this.requestStop(operation, 'TIMEOUT'); }
@@ -704,6 +1426,19 @@ export class Executor {
         }
         const sha256 = await fileHash(canonicalOutput);
         this.checkpoint(operation);
+        const registered = await lstat(canonicalOutput);
+        if (!registered.isFile() || registered.isSymbolicLink() ||
+            registered.dev !== outputInfo.dev || registered.ino !== outputInfo.ino ||
+            registered.size !== outputInfo.size || registered.mtimeMs !== outputInfo.mtimeMs ||
+            registered.ctimeMs !== outputInfo.ctimeMs) {
+          throw new ToolError('UNSAFE_CONFIGURATION', 'Compiler output changed while being registered.');
+        }
+        operation.artifactRecord = Object.freeze({
+          filename: canonicalOutput, sha256, size: registered.size,
+          dev: registered.dev, ino: registered.ino,
+          mtimeMs: registered.mtimeMs, ctimeMs: registered.ctimeMs,
+          architecture: 'x86_64',
+        });
         operation.result.artifact = {
           path: path.relative(this.root, canonicalOutput).split(path.sep).join('/'),
           size: outputInfo.size, sha256,

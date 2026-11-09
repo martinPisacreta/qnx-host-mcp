@@ -18,11 +18,12 @@ A seventh example, [a client in another process that finds the server by name](e
 
 ## Start here
 
-QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and compiling workspace C sources with fixed arguments.
+QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and compiling workspace C sources with fixed arguments, and, when the operator enables it, running a compiled artifact in QEMU with no network adapter.
 
 | Resource | What it shows | Evidence |
 | --- | --- | --- |
 | [Demo video](https://youtu.be/AJFYVIhbzyM) | All seven examples compiled through MCP, run in one QEMU boot and checked with `tutorial/check-run.sh` (2:30) | [Verification log](tutorial/verification-all-2026-11-09.txt) |
+| [Compile and run through MCP](evidence/run-artifact-20261109/README.md) | `qnx_compile_c`, then `qnx_run_artifact`: an AI client compiles a C file and runs it in QEMU with no network adapter (`node scripts/run-example.mjs examples/hello src/hello.c`) | [Run output](evidence/run-artifact-20261109/run-output.txt) |
 | [Tutorial: Part 1](tutorial/README.md) | Compile a QNX C program, build an image and run it in QEMU | [Verification log](tutorial/verification-2026-11-06.txt) |
 | [Tutorial: Part 2](tutorial/part2-message-passing.md) | Native synchronous message passing | [Verification log](tutorial/verification-part2-2026-11-06.txt) |
 | [Tutorial: Part 3](tutorial/part3-resource-manager.md) | A resource manager accessed with ordinary file operations | [Recorded run](evidence/qemu-run-resmgr-20261106/) |
@@ -143,6 +144,20 @@ The guest had no network interface. Its unedited console reports `no valid inter
 
 Output is capped at 32 KiB per stream. Excess output is drained and reported as OUTPUT_LIMIT. Process cancellation targets the operation's Linux process group and escalates after the configured grace period. Native Windows process execution remains disabled.
 
+### qnx_run_artifact (disabled by default)
+
+Accepts only `{ "compileOperationId": "<successful compilation operation ID>" }` from this server. Poll `qnx_operation_status` for completion or request cancellation with `qnx_operation_cancel`.
+
+To enable it, the operator supplies an absolute `QNX_MCP_RUN_CONFIG` path to a JSON file containing exactly:
+
+```json
+{ "version": 1, "enabled": true, "templateDir": "/absolute/path/to/prepared-template" }
+```
+
+The server requires the SDK environment to be loaded beforehand. Each run copies the template without `output/`, verifies the compiled artifact, builds a private image and launches QEMU with no emulated network adapter. Guest console retention is limited to 32 KiB. Preparation, build, guest execution and cleanup have deadlines of 30, 120, 60 and 30 seconds, respectively. The result separates guest, builder and QEMU exit codes.
+
+Absent configuration or `enabled: false` returns `UNSAFE_CONFIGURATION` without creating an operation. Regression tests use synthetic executables. On 9 November 2026 the tool also ran with the real QNX SDP 8.0 SDK and QEMU: `examples/hello` and `examples/nameservice` each exited with status 0 in about 24 seconds, leaving no QEMU process or run directory ([evidence](evidence/run-artifact-20261109/README.md)). To try it: `node scripts/run-example.mjs examples/hello src/hello.c`.
+
 ## Image configuration
 
 QNX_MCP_IMAGE_CONFIG optionally names an absolute operator-controlled JSON file containing exactly:
@@ -174,7 +189,7 @@ See [Image notes](docs/IMAGE-NOTES.md), [Launcher validation](docs/LAUNCHER-VALI
 npm test
 ```
 
-Reported results on the project host comprise six consecutive complete WSL runs, each passing 60/60, and an integrated-project run passing 60/60. Their underlying suite logs were not inspected for this update. Separately, the isolated Linux candidate previously produced an observed result of 60 passed, zero failed, zero cancelled and zero skipped.
+Reported results on the project host comprise six consecutive complete WSL runs, each passing 60/60, and an integrated-project run passing 60/60. Their underlying suite logs were not inspected for this update. Separately, the isolated Linux candidate previously produced an observed result of 60 passed, zero failed, zero cancelled and zero skipped. With `qnx_run_artifact` and its three new test files, the suite passed 85/85 on Linux with Node 22 on 9 November 2026.
 
 Regression tests use fake executables, controlled Linux processes and supplied socket tables. Guest execution is supported by the separate retained console evidence, rather than those regression tests. No tests were repeated for this documentation update. The CI workflow specifies Ubuntu and Node 22; execution on GitHub remains unverified.
 

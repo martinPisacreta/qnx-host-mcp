@@ -1,0 +1,102 @@
+# qnx_run_artifact with the real QNX SDP 8.0 SDK and QEMU
+# Host: Windows 11, WSL2 Ubuntu 24.04; QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18); QNX SDP 8.0 qcc default target 12.2.0,gcc_ntox86_64
+# Template: the tutorial's mkqnximage local/ configuration only (no output/, no binaries).
+# Date: 2026-11-09T22:57:57Z
+
+## 1. Without QNX_MCP_RUN_CONFIG (expected: UNSAFE_CONFIGURATION)
+{
+  "source": "src/hello.c",
+  "compile": {
+    "state": "succeeded",
+    "sizeBytes": 9208,
+    "sha256": "e5596d9e949d480cf1c129c6dbcd98adec84661edad263e40af204991dc6e798"
+  },
+  "run": {
+    "state": "failed",
+    "errorCode": "UNSAFE_CONFIGURATION",
+    "exitCode": null,
+    "buildExitCode": null,
+    "qemuExitCode": null,
+    "timings": null,
+    "consoleTruncated": null
+  },
+  "consoleTail": []
+}
+exit status: 1
+
+## 2. node scripts/run-example.mjs examples/hello src/hello.c
+{
+  "source": "src/hello.c",
+  "compile": {
+    "state": "succeeded",
+    "sizeBytes": 9208,
+    "sha256": "e5596d9e949d480cf1c129c6dbcd98adec84661edad263e40af204991dc6e798"
+  },
+  "run": {
+    "state": "succeeded",
+    "errorCode": null,
+    "exitCode": 0,
+    "buildExitCode": 0,
+    "qemuExitCode": 0,
+    "timings": {
+      "preparationMs": 31,
+      "buildMs": 2116,
+      "guestMs": 21742,
+      "cleanupMs": 44,
+      "totalMs": 23933
+    },
+    "consoleTruncated": false
+  },
+  "consoleTail": [
+    "ifconfig: interface vtnet0 does not exist",
+    "no valid interfaces found",
+    "---> Starting sshd",
+    "Memory fault (core dumped) ",
+    "---> Starting misc",
+    "QNX_RUN_d9ecc1ddd380a62757e05bc25d793614_BEGIN",
+    "Hello from QNX MCP smoke.",
+    "QNX_RUN_d9ecc1ddd380a62757e05bc25d793614_EXIT=0"
+  ]
+}
+exit status: 0
+
+## 3. node scripts/run-example.mjs examples/nameservice src/nameservice.c
+{
+  "source": "src/nameservice.c",
+  "compile": {
+    "state": "succeeded",
+    "sizeBytes": 14224,
+    "sha256": "f7100afb90f394ef7ebaa57c5c704be94a242d14061c06ca944fd7a2666a386d"
+  },
+  "run": {
+    "state": "succeeded",
+    "errorCode": null,
+    "exitCode": 0,
+    "buildExitCode": 0,
+    "qemuExitCode": 0,
+    "timings": {
+      "preparationMs": 25,
+      "buildMs": 1705,
+      "guestMs": 21831,
+      "cleanupMs": 46,
+      "totalMs": 23608
+    },
+    "consoleTruncated": false
+  },
+  "consoleTail": [
+    "no valid interfaces found",
+    "---> Starting sshd",
+    "Memory fault (core dumped) ",
+    "---> Starting misc",
+    "QNX_RUN_ad25d9d1e9afa34bcfe22f490581cd06_BEGIN",
+    "QNX_NAME_OK replies=21,33,63",
+    "cross_process=1 registered=1",
+    "QNX_RUN_ad25d9d1e9afa34bcfe22f490581cd06_EXIT=0"
+  ]
+}
+exit status: 0
+
+## Afterwards
+no QEMU process left
+examples/hello/runs: 0 entries
+examples/nameservice/runs: 0 entries
