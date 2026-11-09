@@ -1,6 +1,6 @@
 # Run a QNX 8.0 C program in QEMU from Windows
 
-This is Part 1. [Part 2](part2-message-passing.md) adds native QNX message passing (`MsgSend`, `MsgReceive`, `MsgReply`) to the same image, [Part 3](part3-resource-manager.md) adds a resource manager read with ordinary `open` and `read`, [Part 4](part4-pulses-timers.md) adds a periodic timer that delivers pulses to a channel, [Part 5](part5-registered-events.md) adds a server that replies at once and notifies the client later with a registered event, and [Part 6](part6-priority-inheritance.md) shows a server thread running at the priority of the client it serves; Parts 1 to 5 were verified on 6 November 2026 and Part 6 on 8 November 2026.
+This is Part 1. [Part 2](part2-message-passing.md) adds native QNX message passing (`MsgSend`, `MsgReceive`, `MsgReply`) to the same image, [Part 3](part3-resource-manager.md) adds a resource manager read with ordinary `open` and `read`, [Part 4](part4-pulses-timers.md) adds a periodic timer that delivers pulses to a channel, [Part 5](part5-registered-events.md) adds a server that replies at once and notifies the client later with a registered event, [Part 6](part6-priority-inheritance.md) shows a server thread running at the priority of the client it serves, and [Part 7](part7-name-service.md) moves the client into a separate process that finds the server by name; Parts 1 to 5 were verified on 6 November 2026, Part 6 on 8 November 2026 and Part 7 on 9 November 2026.
 
 ## What you will achieve
 
@@ -207,15 +207,15 @@ QNX_MCP_RUN_EXIT=0
 
 Check the greeting and the guest program's exit status in your own console file. QEMU's termination status is separate from `QNX_MCP_RUN_EXIT=0`. The earlier historical console also recorded missing interfaces and an sshd memory fault. Those startup messages did not prevent the demonstrated program from running.
 
-### Check all six examples in one command
+### Check all seven examples in one command
 
-When the image also carries the examples of Parts 2 to 6, one boot runs all six. From the repository root, check that boot's console file:
+When the image also carries the examples of Parts 2 to 7, one boot runs all seven. From the repository root, check that boot's console file:
 
 ```bash
 bash tutorial/check-run.sh /root/qnx-tutorial-run/output/qemu.out
 ```
 
-[`check-run.sh`](check-run.sh) removes carriage returns, requires every line of each `examples/<example>/expected-output.txt` as a complete console line plus the example's exit marker with status 0, and prints `PASS` or `FAIL` per example. It exits with 0 only when all six pass. It reads an existing console file; it does not start QEMU or rerun anything. The result of a fresh boot on 9 November 2026 is in [`verification-all-2026-11-09.txt`](verification-all-2026-11-09.txt): `6/6 examples passed`.
+[`check-run.sh`](check-run.sh) removes carriage returns, requires every line of each `examples/<example>/expected-output.txt` as a complete console line plus the example's exit marker with status 0, and prints `PASS` or `FAIL` per example. It exits with 0 only when all seven pass. It reads an existing console file; it does not start QEMU or rerun anything. The result of a fresh boot on 9 November 2026 is in [`verification-all-2026-11-09.txt`](verification-all-2026-11-09.txt): `7/7 examples passed`.
 
 ## Common problems and cleanup
 
@@ -233,13 +233,14 @@ The launcher stops and waits for the QEMU process it started. Preserve `output/q
 
 - [`hello.c`](hello.c): the exact program compiled in step 4.
 - [`run-qemu.sh`](run-qemu.sh): the boot and capture block from step 6, as one script.
-- [`check-run.sh`](check-run.sh): checks a console file for the expected output and exit status of all six examples.
-- [`verification-all-2026-11-09.txt`](verification-all-2026-11-09.txt): checker output and serial console of a fresh boot with all six examples on 9 November 2026.
+- [`check-run.sh`](check-run.sh): checks a console file for the expected output and exit status of all seven examples.
+- [`verification-all-2026-11-09.txt`](verification-all-2026-11-09.txt): checker output and serial console of a fresh boot with all seven examples on 9 November 2026.
 - [`part2-message-passing.md`](part2-message-passing.md): Part 2, native QNX message passing between a client and a server thread.
 - [`part3-resource-manager.md`](part3-resource-manager.md): Part 3, a resource manager at `/dev/automata-echo`, compiled directly and through MCP.
 - [`part4-pulses-timers.md`](part4-pulses-timers.md): Part 4, a `CLOCK_MONOTONIC` timer that delivers pulses received with `MsgReceivePulse`, compiled directly and through MCP.
 - [`part5-registered-events.md`](part5-registered-events.md): Part 5, `MsgRegisterEvent`, `MsgVerifyEvent` and `MsgDeliverEvent` between a client and a server thread, compiled directly and through MCP.
 - [`part6-priority-inheritance.md`](part6-priority-inheritance.md): Part 6, message priority inheritance and `_NTO_CHF_FIXED_PRIORITY`, compiled directly and through MCP.
+- [`part7-name-service.md`](part7-name-service.md): Part 7, `name_attach` and `name_open` between two processes, compiled directly and through MCP.
 - [`verification-2026-11-06.txt`](verification-2026-11-06.txt): console output of the complete run of steps 4 to 7 on 6 November 2026 (Windows 11, WSL2, Ubuntu 24.04.5 LTS), including the guest output above.
 - [`../evidence/qemu-run-20261103/`](../evidence/qemu-run-20261103/): the first recorded run of the same custom-image method, from this project's MCP smoke test on 3 November 2026.
 

@@ -1,0 +1,12 @@
+{
+  "tool": "qnx_compile_c",
+  "source": "src/nameservice.c",
+  "state": "succeeded",
+  "exitCode": 0,
+  "artifact": {
+    "path": "build/72b1bc788882022cdc7887faedd65116/program",
+    "sizeBytes": 14224,
+    "sha256": "f7100afb90f394ef7ebaa57c5c704be94a242d14061c06ca944fd7a2666a386d",
+    "independentlyVerified": true
+  }
+}

@@ -1,0 +1,58 @@
+
+non UEFI or UEFI+CSM boot
+ACPI table not found (0x4746434d)
+System behaves poorly without PCID support.
+overriding mask for controller 2, vector_base 0
+---> Starting slogger2
+---> Starting PCI Services
+---> Starting fsevmgr
+---> Starting devb
+# Path=0 - Intel 82371SB
+ target=0 lun=0     Direct-Access(0) -          QEMU HARDDISK    Rev: 2.5+
+Path=1 - Intel 82371SB
+ target=0 lun=0            CD-ROM(5) - QEMU     QEMU DVD-ROM     Rev: 2.5+
+---> Mounting file systems
+---> Mounting file systems
+---> Starting Networking
+if_up: tries exhausted
+ifconfig: interface vtnet0 does not exist
+no valid interfaces found
+---> Starting sshd
+Memory fault (core dumped) 
+---> Starting misc
+QNX_MCP_RUN_BEGIN
+QNX noname 8.0.0 2026/06/05-16:26:03EDT x86pc x86_64
+Hello from QNX MCP smoke.
+QNX_MCP_RUN_EXIT=0
+QNX_MSGPASS_RUN_BEGIN
+msgpass: sent 7 got 14
+msgpass: sent 11 got 22
+msgpass: sent 21 got 42
+msgpass: ok
+QNX_MSGPASS_RUN_EXIT=0
+QNX_RESMGR_RUN_BEGIN
+resmgr: read 33 bytes: hello from a QNX resource manager
+resmgr: ok
+QNX_RESMGR_RUN_EXIT=0
+QNX_PULSES_RUN_BEGIN
+QNX_PULSES_OK received=5
+elapsed_ms_ok=1
+QNX_PULSES_RUN_EXIT=0
+QNX_EVENTS_RUN_BEGIN
+QNX_EVENTS_OK delivered=3
+registered=1 verified=1
+QNX_EVENTS_RUN_EXIT=0
+QNX_PRIO_RUN_BEGIN
+QNX_PRIO_INHERIT_OK received_at=12,20
+QNX_PRIO_FIXED_OK received_at=10,10
+QNX_PRIO_RUN_EXIT=0
+QNX_NAME_RUN_BEGIN
+QNX_NAME_OK replies=21,33,63
+cross_process=1 registered=1
+QNX_NAME_RUN_EXIT=0
+
+To exit QEMU, type <ctrl>a x
+
+[?7hProcess count:21
+Startup complete
+QNX noname 8.0.0 2026/06/05-16:26:03EDT x86pc x86_64

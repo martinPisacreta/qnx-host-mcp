@@ -1,0 +1,2 @@
+45de747ab4fa9a1adf7e0104cb12696cfca545fc553b068bfd29930aab482995  examples/nameservice/src/nameservice.c
+f7100afb90f394ef7ebaa57c5c704be94a242d14061c06ca944fd7a2666a386d  automata-name (direct qcc build placed at /proc/boot/automata-name; byte-identical to the MCP artifact, same SHA-256)

@@ -97,4 +97,6 @@ If only the earlier examples appear, check the image mapping, the startup block 
 QEMU with TCG is not a real-time timing measurement; this example checks reported scheduling priorities, not latency.
 The recorded guest had no network interface; networking and sshd startup messages are unrelated.
 
+Next: [Part 7](part7-name-service.md) moves the client into a separate process that finds the server by name.
+
 Back to [Part 1](README.md), [Part 2](part2-message-passing.md), [Part 3](part3-resource-manager.md), [Part 4](part4-pulses-timers.md) or [Part 5](part5-registered-events.md).

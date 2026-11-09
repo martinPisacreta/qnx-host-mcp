@@ -14,25 +14,29 @@ A fifth example, [native QNX registered events](examples/events/README.md), show
 
 A sixth example, [native QNX message priority inheritance](examples/prioinherit/README.md), shows that a server thread receiving a message runs at the priority of the sending client, and that a channel created with `_NTO_CHF_FIXED_PRIORITY` keeps the server at its own priority. It was compiled through MCP with `node scripts/compile-example.mjs examples/prioinherit src/prioinherit.c` and run on QNX 8.0 in QEMU with the expected output and exit status 0 ([evidence](evidence/qemu-run-prio-20261108/README.md)).
 
+A seventh example, [a client in another process that finds the server by name](examples/nameservice/README.md), registers a server with `name_attach` and has a forked child open it with `name_open` and exchange three messages; the server checks that each request comes from another process. It was compiled through MCP with `node scripts/compile-example.mjs examples/nameservice src/nameservice.c` and run on QNX 8.0 in QEMU with the expected output and exit status 0 ([evidence](evidence/qemu-run-name-20261109/README.md)).
+
 ## Start here
 
 QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and compiling workspace C sources with fixed arguments.
 
 | Resource | What it shows | Evidence |
 | --- | --- | --- |
-| [Demo video](https://youtu.be/H3QIo01a2ow) | Examples 1 to 5 (hello to registered events) compiled through MCP and run in one QEMU boot (2:48); the sixth, priority inheritance, was added after the video | — |
+| [Demo video](https://youtu.be/H3QIo01a2ow) | Examples 1 to 5 (hello to registered events) compiled through MCP and run in one QEMU boot (2:48); the sixth (priority inheritance) and seventh (name service between processes) were added after the video | — |
 | [Tutorial: Part 1](tutorial/README.md) | Compile a QNX C program, build an image and run it in QEMU | [Verification log](tutorial/verification-2026-11-06.txt) |
 | [Tutorial: Part 2](tutorial/part2-message-passing.md) | Native synchronous message passing | [Verification log](tutorial/verification-part2-2026-11-06.txt) |
 | [Tutorial: Part 3](tutorial/part3-resource-manager.md) | A resource manager accessed with ordinary file operations | [Recorded run](evidence/qemu-run-resmgr-20261106/) |
 | [Tutorial: Part 4](tutorial/part4-pulses-timers.md) | A periodic timer that delivers pulses to a channel | [Recorded run](evidence/qemu-run-pulses-20261106/) |
 | [Tutorial: Part 5](tutorial/part5-registered-events.md) | A server that replies at once and notifies the client later with a registered event | [Recorded run](evidence/qemu-run-events-20261106/) |
 | [Tutorial: Part 6](tutorial/part6-priority-inheritance.md) | A server thread that runs at the priority of the client it is serving | [Recorded run](evidence/qemu-run-prio-20261108/) |
+| [Tutorial: Part 7](tutorial/part7-name-service.md) | A client in another process that finds the server by name (`name_attach`, `name_open`) | [Recorded run](evidence/qemu-run-name-20261109/) |
 | [Hello example](examples/hello/) | QNX-target C compilation and guest execution | [Recorded run](evidence/qemu-run-20261103/) |
 | [Message-passing example](examples/msgpass/) | `ChannelCreate`, `ConnectAttach`, `MsgSend`, `MsgReceive`, `MsgReply` | [Recorded run](evidence/qemu-run-msgpass-20261104/) |
 | [Resource-manager example](examples/resmgr/) | `resmgr_attach`, custom `io_read`, ordinary `open` and `read` | [Recorded run](evidence/qemu-run-resmgr-20261106/) |
 | [Pulses and timers example](examples/pulses/) | `SIGEV_PULSE_INIT`, `timer_create`, `timer_settime`, `MsgReceivePulse` | [Recorded run](evidence/qemu-run-pulses-20261106/) |
 | [Registered events example](examples/events/) | `MsgRegisterEvent`, `MsgVerifyEvent`, `MsgDeliverEvent`, `MsgUnregisterEvent` | [Recorded run](evidence/qemu-run-events-20261106/) |
 | [Priority inheritance example](examples/prioinherit/) | `SchedGet`, `sched_curpriority`, `_NTO_CHF_FIXED_PRIORITY`, `SCHED_RR` threads | [Recorded run](evidence/qemu-run-prio-20261108/) |
+| [Name service example](examples/nameservice/) | `name_attach`, `name_open`, `_IO_CONNECT`, `_PULSE_CODE_DISCONNECT`, two processes | [Recorded run](evidence/qemu-run-name-20261109/) |
 
 ### Try it
 

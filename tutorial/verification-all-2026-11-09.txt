@@ -1,14 +1,15 @@
-$ bash tutorial/check-run.sh /root/qnx-tutorial-run/output/qemu-20261109.out   (copy of output/qemu.out taken right after the boot)
+$ bash tutorial/check-run.sh evidence/qemu-run-name-20261109/qemu-serial-console.txt   (console of the boot, copied from output/qemu.out)
 PASS hello
 PASS msgpass
 PASS resmgr
 PASS pulses
 PASS events
 PASS prioinherit
-6/6 examples passed
+PASS nameservice
+7/7 examples passed
 exit status: 0
 
---- serial console of the same boot, 9 November 2026 (carriage returns removed) ---
+--- serial console of the same boot, 9 November 2026 06:56 UTC, with all seven examples (carriage returns removed) ---
 
 non UEFI or UEFI+CSM boot
 ACPI table not found (0x4746434d)
@@ -18,11 +19,11 @@ overriding mask for controller 2, vector_base 0
 ---> Starting PCI Services
 ---> Starting fsevmgr
 ---> Starting devb
-# ---> Mounting file systems
-Path=0 - Intel 82371SB
+# Path=0 - Intel 82371SB
  target=0 lun=0     Direct-Access(0) -          QEMU HARDDISK    Rev: 2.5+
 Path=1 - Intel 82371SB
  target=0 lun=0            CD-ROM(5) - QEMU     QEMU DVD-ROM     Rev: 2.5+
+---> Mounting file systems
 ---> Mounting file systems
 ---> Starting Networking
 if_up: tries exhausted
@@ -57,6 +58,10 @@ QNX_PRIO_RUN_BEGIN
 QNX_PRIO_INHERIT_OK received_at=12,20
 QNX_PRIO_FIXED_OK received_at=10,10
 QNX_PRIO_RUN_EXIT=0
+QNX_NAME_RUN_BEGIN
+QNX_NAME_OK replies=21,33,63
+cross_process=1 registered=1
+QNX_NAME_RUN_EXIT=0
 
 To exit QEMU, type <ctrl>a x
 

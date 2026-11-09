@@ -73,5 +73,6 @@ check_example resmgr QNX_RESMGR_RUN_EXIT=0
 check_example pulses QNX_PULSES_RUN_EXIT=0
 check_example events QNX_EVENTS_RUN_EXIT=0
 check_example prioinherit QNX_PRIO_RUN_EXIT=0
-printf '%s/6 examples passed\n' "$passed"
-[[ "$passed" -eq 6 ]]
+check_example nameservice QNX_NAME_RUN_EXIT=0
+printf '%s/7 examples passed\n' "$passed"
+[[ "$passed" -eq 7 ]]
