@@ -22,7 +22,7 @@ QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and 
 
 | Resource | What it shows | Evidence |
 | --- | --- | --- |
-| [Demo video](https://youtu.be/H3QIo01a2ow) | Examples 1 to 5 (hello to registered events) compiled through MCP and run in one QEMU boot (2:48); the sixth (priority inheritance) and seventh (name service between processes) were added after the video | — |
+| [Demo video](https://youtu.be/AJFYVIhbzyM) | All seven examples compiled through MCP, run in one QEMU boot and checked with `tutorial/check-run.sh` (2:30) | [Verification log](tutorial/verification-all-2026-11-09.txt) |
 | [Tutorial: Part 1](tutorial/README.md) | Compile a QNX C program, build an image and run it in QEMU | [Verification log](tutorial/verification-2026-11-06.txt) |
 | [Tutorial: Part 2](tutorial/part2-message-passing.md) | Native synchronous message passing | [Verification log](tutorial/verification-part2-2026-11-06.txt) |
 | [Tutorial: Part 3](tutorial/part3-resource-manager.md) | A resource manager accessed with ordinary file operations | [Recorded run](evidence/qemu-run-resmgr-20261106/) |
