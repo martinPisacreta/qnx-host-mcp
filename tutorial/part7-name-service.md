@@ -102,4 +102,6 @@ If only the earlier examples appear, check the image mapping, the startup block 
 - Client and server are one executable split with `fork`; they are two processes, but not two separately installed programs.
 - The recorded guest had no network interface; networking and sshd startup messages are unrelated.
 
+Next: [Part 8](part8-run-through-mcp.md) compiles and runs the examples through MCP with `qnx_run_artifact`.
+
 Back to [Part 1](README.md), [Part 2](part2-message-passing.md), [Part 3](part3-resource-manager.md), [Part 4](part4-pulses-timers.md), [Part 5](part5-registered-events.md) or [Part 6](part6-priority-inheritance.md).

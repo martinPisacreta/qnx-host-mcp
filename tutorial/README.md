@@ -1,6 +1,6 @@
 # Run a QNX 8.0 C program in QEMU from Windows
 
-This is Part 1. [Part 2](part2-message-passing.md) adds native QNX message passing (`MsgSend`, `MsgReceive`, `MsgReply`) to the same image, [Part 3](part3-resource-manager.md) adds a resource manager read with ordinary `open` and `read`, [Part 4](part4-pulses-timers.md) adds a periodic timer that delivers pulses to a channel, [Part 5](part5-registered-events.md) adds a server that replies at once and notifies the client later with a registered event, [Part 6](part6-priority-inheritance.md) shows a server thread running at the priority of the client it serves, and [Part 7](part7-name-service.md) moves the client into a separate process that finds the server by name; Parts 1 to 5 were verified on 6 November 2026, Part 6 on 8 November 2026 and Part 7 on 9 November 2026.
+This is Part 1. [Part 2](part2-message-passing.md) adds native QNX message passing (`MsgSend`, `MsgReceive`, `MsgReply`) to the same image, [Part 3](part3-resource-manager.md) adds a resource manager read with ordinary `open` and `read`, [Part 4](part4-pulses-timers.md) adds a periodic timer that delivers pulses to a channel, [Part 5](part5-registered-events.md) adds a server that replies at once and notifies the client later with a registered event, [Part 6](part6-priority-inheritance.md) shows a server thread running at the priority of the client it serves, [Part 7](part7-name-service.md) moves the client into a separate process that finds the server by name, and [Part 8](part8-run-through-mcp.md) compiles and runs the examples through MCP with `qnx_run_artifact`; Parts 1 to 5 were verified on 6 November 2026, Part 6 on 8 November 2026 and Parts 7 and 8 on 9 November 2026.
 
 ## What you will achieve
 
@@ -241,6 +241,7 @@ The launcher stops and waits for the QEMU process it started. Preserve `output/q
 - [`part5-registered-events.md`](part5-registered-events.md): Part 5, `MsgRegisterEvent`, `MsgVerifyEvent` and `MsgDeliverEvent` between a client and a server thread, compiled directly and through MCP.
 - [`part6-priority-inheritance.md`](part6-priority-inheritance.md): Part 6, message priority inheritance and `_NTO_CHF_FIXED_PRIORITY`, compiled directly and through MCP.
 - [`part7-name-service.md`](part7-name-service.md): Part 7, `name_attach` and `name_open` between two processes, compiled directly and through MCP.
+- [`part8-run-through-mcp.md`](part8-run-through-mcp.md): Part 8, `qnx_compile_c` then `qnx_run_artifact` through MCP, with the recorded output.
 - [`verification-2026-11-06.txt`](verification-2026-11-06.txt): console output of the complete run of steps 4 to 7 on 6 November 2026 (Windows 11, WSL2, Ubuntu 24.04.5 LTS), including the guest output above.
 - [`../evidence/qemu-run-20261103/`](../evidence/qemu-run-20261103/): the first recorded run of the same custom-image method, from this project's MCP smoke test on 3 November 2026.
 
