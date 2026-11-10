@@ -1,5 +1,7 @@
 # QNX Host MCP
 
+An embedded developer asking an AI assistant for QNX code needs to know whether it compiles for QNX and runs on a QNX target. This server returns the compiler result and the compiled artifact's SHA-256. When the operator enables execution, it also returns the guest program's exit status and console output from QEMU.
+
 MCP server over stdio for inspecting a configured QNX compiler and compiling workspace C sources with fixed arguments. Operations return an ID for status polling and cancellation.
 
 Real compilation and execution of the unchanged artifact inside QNX 8.0.0 x86_64 in QEMU 8.2.2 were completed on the project host. [Guest execution evidence](evidence/qemu-run-20261103/README.md) records the expected message and exit status 0.
