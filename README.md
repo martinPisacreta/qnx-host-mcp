@@ -22,7 +22,7 @@ QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and 
 
 | Resource | What it shows | Evidence |
 | --- | --- | --- |
-| [Demo video](https://youtu.be/AJFYVIhbzyM) | All seven examples compiled through MCP, run in one QEMU boot and checked with `tutorial/check-run.sh` (2:30) | [Verification log](tutorial/verification-all-2026-11-09.txt) |
+| [Demo video](https://youtu.be/yVrZNldgSKE) | An AI client compiles and runs QNX programs through MCP with `qnx_run_artifact`, plus all seven examples checked with `tutorial/check-run.sh` (2:14) | [Run output](evidence/run-artifact-20261109/run-output.txt) · [Verification log](tutorial/verification-all-2026-11-09.txt) |
 | [Compile and run through MCP](evidence/run-artifact-20261109/README.md) | `qnx_compile_c`, then `qnx_run_artifact`: an AI client compiles a C file and runs it in QEMU with no network adapter (`node scripts/run-example.mjs examples/hello src/hello.c`) | [Run output](evidence/run-artifact-20261109/run-output.txt) |
 | [Tutorial: Part 1](tutorial/README.md) | Compile a QNX C program, build an image and run it in QEMU | [Verification log](tutorial/verification-2026-11-06.txt) |
 | [Tutorial: Part 2](tutorial/part2-message-passing.md) | Native synchronous message passing | [Verification log](tutorial/verification-part2-2026-11-06.txt) |
