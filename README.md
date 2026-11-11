@@ -18,6 +18,10 @@ A sixth example, [native QNX message priority inheritance](examples/prioinherit/
 
 A seventh example, [a client in another process that finds the server by name](examples/nameservice/README.md), registers a server with `name_attach` and has a forked child open it with `name_open` and exchange three messages; the server checks that each request comes from another process. It was compiled through MCP with `node scripts/compile-example.mjs examples/nameservice src/nameservice.c` and run on QNX 8.0 in QEMU with the expected output and exit status 0 ([evidence](evidence/qemu-run-name-20261109/README.md)).
 
+## How it differs
+
+Other public QNX MCP servers connect to a target that is already running: over SSH to deploy and run a binary, over qconn for introspection and debugging, or over SSH/SFTP for read-only diagnostics. QNX Host MCP needs no login or network access to the guest. It compiles with the configured QNX SDK through fixed MCP tools and, when the operator enables `qnx_run_artifact` (disabled by default), builds a private image for each run, boots it in QEMU without networking and returns the captured console output and the guest program's exit status. QNX's own tools (Momentics IDE, the QNX Toolkit for VS Code and `qcc`) remain the place for interactive development and debugging.
+
 ## Start here
 
 QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and compiling workspace C sources with fixed arguments, and, when the operator enables it, running a compiled artifact in QEMU with no network adapter.
