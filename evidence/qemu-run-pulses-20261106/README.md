@@ -19,7 +19,7 @@ elapsed_ms_ok=1
 QNX_PULSES_RUN_EXIT=0
 ```
 
-The two program lines match [expected-output.txt](../../examples/pulses/expected-output.txt) exactly: a `CLOCK_MONOTONIC` timer armed with a 100 ms interval delivered five pulses with code `_PULSE_CODE_MINAVAIL` and value 42 to the process's own channel, and they arrived within the example's 400 to 1500 ms tolerance.
+The two program lines match [expected-output.txt](../../examples/pulses/expected-output.txt) exactly: a `CLOCK_MONOTONIC` timer armed with a 100 ms interval delivered five pulses with code `_PULSE_CODE_MINAVAIL` and value 42 to the process's own channel.
 
 ## Limits
 

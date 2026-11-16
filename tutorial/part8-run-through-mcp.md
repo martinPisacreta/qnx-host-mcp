@@ -22,7 +22,7 @@ From the repository root in the prepared environment:
 ```bash
 node scripts/run-example.mjs examples/hello src/hello.c
 ```
-Part 2 of [run-output.txt](../evidence/run-artifact-20261109/run-output.txt) records this output verbatim:
+Part 2 of [run-output.txt](../evidence/run-artifact-20261109/run-output.txt) records this output (timing fields removed from the published copy):
 ```text
 {
   "source": "src/hello.c",
@@ -37,13 +37,7 @@ Part 2 of [run-output.txt](../evidence/run-artifact-20261109/run-output.txt) rec
     "exitCode": 0,
     "buildExitCode": 0,
     "qemuExitCode": 0,
-    "timings": {
-      "preparationMs": 31,
-      "buildMs": 2116,
-      "guestMs": 21742,
-      "cleanupMs": 44,
-      "totalMs": 23933
-    },
+    "timings": "removed from this published copy",
     "consoleTruncated": false
   },
   "consoleTail": [
@@ -66,7 +60,7 @@ Use the same operator configuration:
 ```bash
 node scripts/run-example.mjs examples/nameservice src/nameservice.c
 ```
-Part 3 of the same evidence records this output verbatim:
+Part 3 of the same evidence records this output (timing fields removed from the published copy):
 ```text
 {
   "source": "src/nameservice.c",
@@ -81,13 +75,7 @@ Part 3 of the same evidence records this output verbatim:
     "exitCode": 0,
     "buildExitCode": 0,
     "qemuExitCode": 0,
-    "timings": {
-      "preparationMs": 25,
-      "buildMs": 1705,
-      "guestMs": 21831,
-      "cleanupMs": 46,
-      "totalMs": 23608
-    },
+    "timings": "removed from this published copy",
     "consoleTruncated": false
   },
   "consoleTail": [

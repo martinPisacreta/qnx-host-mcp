@@ -19,7 +19,7 @@ After five pulses the program measures the elapsed `CLOCK_MONOTONIC` time, then 
 ## Output and exit status
 
 On success it prints the two lines of [expected-output.txt](expected-output.txt) and exits with status 0.
-`elapsed_ms_ok=1` means the five pulses arrived within 400 to 1500 ms (nominally about 500 ms). This is a demonstration tolerance, not a real-time measurement: the recorded guest ran under QEMU's TCG emulation.
+`elapsed_ms_ok=1` reports that the measured duration passed the example's acceptance check. This is a demonstration tolerance, not a real-time measurement: the recorded guest ran under QEMU's TCG emulation.
 A failed call prints its name and `strerror(errno)` to stderr and exits with status 1; an unexpected pulse code or value is reported as `EPROTO`; a duration outside the tolerance prints `elapsed_ms_ok=0` and exits with status 1.
 
 ## Build and run

@@ -72,7 +72,7 @@ cd /root/qnx-tutorial-run
 mkqnximage --noprompt --build
 ```
 In Part 1's launcher, change the wait marker from `QNX_MCP_RUN_EXIT` to `QNX_MSGPASS_RUN_EXIT`; retain its early-exit check. Otherwise the earlier hello marker can end the wait before this example finishes.
-The adjusted launcher is saved as [`run-qemu-part2.sh`](run-qemu-part2.sh). In the 6 November run the rebuild returned 0, and the message-passing marker appeared 24 seconds after QEMU started.
+The adjusted launcher is saved as [`run-qemu-part2.sh`](run-qemu-part2.sh). In the 6 November run the rebuild returned 0, and the message-passing marker appeared in the captured serial console after QEMU started.
 
 ## Expected and observed output
 The 6 November run printed this block right after the Part 1 hello block, in the same boot. The 4 November recording has the same lines at 27–32 of its `qemu-serial-console.txt`:

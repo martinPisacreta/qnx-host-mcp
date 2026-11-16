@@ -1,6 +1,6 @@
 Verification run of tutorial Part 2 (native message passing), 6 November 2026, about 03:55 UTC.
 Host: Windows 11, WSL2, Ubuntu 24.04.5 LTS. It reused the Part 1 image directory /root/qnx-tutorial-run.
-The output below is the console of that run, unedited except for this header.
+The output below is the console of that run, unedited except for this header and one elapsed-time value removed on 16 November 2026.
 
 == part1 image present
 -rw-r--r-- 1 root root      152 Nov  6 01:59 /root/qnx-tutorial-run/local/snippets/ifs_files.custom
@@ -27,7 +27,7 @@ build rc=0
 For full list of options, run "mkqnximage --options"
 10930992 output/ifs.bin
 == boot
-marker after 24 s
+marker found
 qemu-system-x86_64: terminating on signal 15 from pid 12 (bash)
 no qemu left
 == output

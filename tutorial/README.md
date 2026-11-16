@@ -194,7 +194,7 @@ wait "$QPID" 2>/dev/null
 tr -d '\r' < output/qemu.out | tail -40
 ```
 
-`-nic none` removes networking; `-display none` disables the display. The serial console goes to `output/qemu.out`. The marker appeared after 24 seconds. The loop allows approximately six minutes but stops early if QEMU has exited. After the marker, the script waits three seconds and sends SIGTERM to its QEMU process. The verified shutdown reported `terminating on signal 15`.
+`-nic none` removes networking; `-display none` disables the display. The serial console goes to `output/qemu.out`. The marker appeared in the captured serial console. The loop allows approximately six minutes but stops early if QEMU has exited. After the marker, the script waits three seconds and sends SIGTERM to its QEMU process. The verified shutdown reported `terminating on signal 15`.
 
 ## 7. Read the output
 

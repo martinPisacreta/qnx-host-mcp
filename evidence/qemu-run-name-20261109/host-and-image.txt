@@ -7,4 +7,4 @@ MCP compile: node scripts/compile-example.mjs examples/nameservice src/nameservi
 Direct compile of the same source: qcc -Vgcc_ntox86_64 -Wall -o automata-name src/nameservice.c (rc 0, no warnings)
 automata-name: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /usr/lib/ldqnx-64.so.2, BuildID[md5/uuid]=ebcd094ec7a420a7a74b50cc55e422e9, with debug_info, not stripped
 Image: mkqnximage --type=qemu --arch=x86_64 --graphics=no (custom image of the tutorial), no network (-nic none), TCG (-cpu max)
-Marker QNX_NAME_RUN_EXIT seen 24 s after QEMU started
+Marker QNX_NAME_RUN_EXIT seen after QEMU started

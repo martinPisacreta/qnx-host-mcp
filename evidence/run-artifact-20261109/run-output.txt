@@ -38,13 +38,7 @@ exit status: 1
     "exitCode": 0,
     "buildExitCode": 0,
     "qemuExitCode": 0,
-    "timings": {
-      "preparationMs": 31,
-      "buildMs": 2116,
-      "guestMs": 21742,
-      "cleanupMs": 44,
-      "totalMs": 23933
-    },
+    "timings": "removed from this published copy",
     "consoleTruncated": false
   },
   "consoleTail": [
@@ -74,13 +68,7 @@ exit status: 0
     "exitCode": 0,
     "buildExitCode": 0,
     "qemuExitCode": 0,
-    "timings": {
-      "preparationMs": 25,
-      "buildMs": 1705,
-      "guestMs": 21831,
-      "cleanupMs": 46,
-      "totalMs": 23608
-    },
+    "timings": "removed from this published copy",
     "consoleTruncated": false
   },
   "consoleTail": [

@@ -163,7 +163,7 @@ To enable it, the operator supplies an absolute `QNX_MCP_RUN_CONFIG` path to a J
 
 The server requires the SDK environment to be loaded beforehand. Each run copies the template without `output/`, verifies the compiled artifact, builds a private image and launches QEMU with no emulated network adapter. Guest console retention is limited to 32 KiB. Preparation, build, guest execution and cleanup have deadlines of 30, 120, 60 and 30 seconds, respectively. The result separates guest, builder and QEMU exit codes.
 
-Absent configuration or `enabled: false` returns `UNSAFE_CONFIGURATION` without creating an operation. Regression tests use synthetic executables. On 9 November 2026 the tool also ran with the real QNX SDP 8.0 SDK and QEMU: `examples/hello` and `examples/nameservice` each exited with status 0 in about 24 seconds, leaving no QEMU process or run directory ([evidence](evidence/run-artifact-20261109/README.md)). To try it: `node scripts/run-example.mjs examples/hello src/hello.c`.
+Absent configuration or `enabled: false` returns `UNSAFE_CONFIGURATION` without creating an operation. Regression tests use synthetic executables. On 9 November 2026 the tool also ran with the real QNX SDP 8.0 SDK and QEMU: `examples/hello` and `examples/nameservice` each exited with status 0, leaving no QEMU process or run directory ([evidence](evidence/run-artifact-20261109/README.md)). To try it: `node scripts/run-example.mjs examples/hello src/hello.c`.
 
 ## Image configuration
 

@@ -2,7 +2,7 @@
 
 `qnx_run_artifact` runs an artifact produced by `qnx_compile_c` in a private QEMU image with no emulated network adapter. It is disabled unless the operator supplies `QNX_MCP_RUN_CONFIG`.
 
-[run-output.txt](run-output.txt) is the unedited output of `scripts/run-example.mjs`, run from this repository's files on Windows 11 with WSL2 Ubuntu 24.04, QNX SDP 8.0 (qcc 12.2.0, gcc_ntox86_64) and QEMU 8.2.2:
+[run-output.txt](run-output.txt) is the output of `scripts/run-example.mjs` (timing fields removed from this published copy on 16 November 2026; nothing else was changed), run from this repository's files on Windows 11 with WSL2 Ubuntu 24.04, QNX SDP 8.0 (qcc 12.2.0, gcc_ntox86_64) and QEMU 8.2.2:
 
 | Case | Result |
 | --- | --- |

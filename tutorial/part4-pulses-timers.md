@@ -37,7 +37,7 @@ The program records its start time (line 50) immediately before arming the timer
 `MsgReceivePulse` (line 60) blocks until a pulse arrives and fills a `struct _pulse`.
 Line 64 checks its `code` and `value.sival_int`; the loop then counts the pulse.
 After five accepted pulses, a second `CLOCK_MONOTONIC` timestamp (line 72) ends the measurement.
-The nominal duration is about 500 ms, and line 78 accepts 400 through 1500 ms, inclusive.
+Line 78 applies the example's acceptance check to that duration.
 This is a demonstration tolerance, not a scheduling guarantee or a real-time benchmark: the recorded guest ran under QEMU's TCG emulation, and the example does not analyze timer overruns.
 Cleanup (lines 82 to 91) deletes the timer, detaches the connection and destroys the channel, in that order.
 A failed call prints its name and `strerror(errno)` to stderr and exits with status 1. An unexpected code or value is reported with `EPROTO`, and an out-of-range duration prints `elapsed_ms_ok=0` and exits with status 1.
