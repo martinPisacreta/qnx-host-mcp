@@ -198,7 +198,9 @@ npm test
 
 Reported results on the project host comprise six consecutive complete WSL runs, each passing 60/60, and an integrated-project run passing 60/60. Their underlying suite logs were not inspected for this update. Separately, the isolated Linux candidate previously produced an observed result of 60 passed, zero failed, zero cancelled and zero skipped. With `qnx_run_artifact` and its three new test files, the suite passed 85/85 on Linux with Node 22 on 9 November 2026.
 
-Regression tests use fake executables, controlled Linux processes and supplied socket tables. Guest execution is supported by the separate retained console evidence, rather than those regression tests. No tests were repeated for this documentation update. The CI workflow specifies Ubuntu and Node 22; execution on GitHub remains unverified.
+Regression tests use fake executables, controlled Linux processes and supplied socket tables. Guest execution is supported by the separate retained console evidence, rather than those regression tests. No tests were repeated for this documentation update.
+
+The CI workflow runs on Ubuntu with Node 22 on every push. It runs `npm test`, the tutorial checker's self-test on synthetic logs (`bash tutorial/test-check-run.sh`, six cases) and the checker against the console retained from the 9 November 2026 boot (`evidence/qemu-run-name-20261109/qemu-serial-console.txt`, seven examples). The last step re-reads stored evidence: CI has no QNX SDK and does not boot QNX, so a green run is not a new guest execution.
 
 ## Scope and limitations
 

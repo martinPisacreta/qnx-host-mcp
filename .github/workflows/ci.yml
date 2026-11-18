@@ -20,3 +20,10 @@ jobs:
           package-manager-cache: false
       - run: npm ci
       - run: npm test
+      # Tutorial checker: self-test on synthetic logs, no QNX SDK needed.
+      - name: Self-test the tutorial checker
+        run: bash tutorial/test-check-run.sh
+      # Historical evidence: re-checks the console retained from the 9 November 2026 boot.
+      # This does not boot QNX; it only confirms the stored console still satisfies the checker.
+      - name: Check the retained console of 9 November 2026
+        run: bash tutorial/check-run.sh evidence/qemu-run-name-20261109/qemu-serial-console.txt
