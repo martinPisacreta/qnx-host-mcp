@@ -27,3 +27,9 @@ jobs:
       # This does not boot QNX; it only confirms the stored console still satisfies the checker.
       - name: Check the retained console of 9 November 2026
         run: bash tutorial/check-run.sh evidence/qemu-run-name-20261109/qemu-serial-console.txt
+      # Simulation: a real MCP client starts src/server.mjs over stdio, lists the tools and
+      # compiles through a FAKE compiler. It proves the client-server conversation, not QNX.
+      - name: Simulated MCP client-server conversation (fake compiler, no QNX)
+        run: |
+          node scripts/smoke.mjs --fake --evidence-root "$RUNNER_TEMP/smoke-fake"
+          cat "$RUNNER_TEMP"/smoke-fake/*/report.md >> "$GITHUB_STEP_SUMMARY"

@@ -200,7 +200,7 @@ Reported results on the project host comprise six consecutive complete WSL runs,
 
 Regression tests use fake executables, controlled Linux processes and supplied socket tables. Guest execution is supported by the separate retained console evidence, rather than those regression tests. No tests were repeated for this documentation update.
 
-The CI workflow runs on Ubuntu with Node 22 on every push. It runs `npm test`, the tutorial checker's self-test on synthetic logs (`bash tutorial/test-check-run.sh`, six cases) and the checker against the console retained from the 9 November 2026 boot (`evidence/qemu-run-name-20261109/qemu-serial-console.txt`, seven examples). The last step re-reads stored evidence: CI has no QNX SDK and does not boot QNX, so a green run is not a new guest execution.
+The CI workflow runs on Ubuntu with Node 22 on every push. It runs `npm test`, the tutorial checker's self-test on synthetic logs (`bash tutorial/test-check-run.sh`, six cases) and the checker against the console retained from the 9 November 2026 boot (`evidence/qemu-run-name-20261109/qemu-serial-console.txt`, seven examples). That step re-reads stored evidence. A further step runs `npm run smoke:fake` with its report directory outside the repository: a real MCP client starts `src/server.mjs` over stdio, lists the nine tools, inspects the compiler and compiles `examples/hello/src/hello.c` through a FAKE compiler, and the resulting report is shown in the run summary, marked SIMULATED. CI has no QNX SDK and does not boot QNX: a green run shows the client-server conversation and the stored evidence, not a new QNX compilation or guest execution.
 
 ## Scope and limitations
 
