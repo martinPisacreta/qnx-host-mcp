@@ -217,7 +217,7 @@ When the image also carries the examples of Parts 2 to 7, one boot runs all seve
 bash tutorial/check-run.sh /root/qnx-tutorial-run/output/qemu.out
 ```
 
-[`check-run.sh`](check-run.sh) removes carriage returns, requires every line of each `examples/<example>/expected-output.txt` as a complete console line plus the example's exit marker with status 0, and prints `PASS` or `FAIL` per example. It exits with 0 only when all seven pass. It reads an existing console file; it does not start QEMU or rerun anything. The result of a fresh boot on 9 November 2026 is in [`verification-all-2026-11-09.txt`](verification-all-2026-11-09.txt): `7/7 examples passed`.
+[`check-run.sh`](check-run.sh) removes carriage returns, requires every line of each `examples/<example>/expected-output.txt` as a complete console line plus the example's exit marker with status 0, and prints `PASS` or `FAIL` per example. It exits with 0 only when all seven pass. It reads an existing console file; it does not start QEMU or rerun anything. The result of a fresh boot on 9 November 2026 is in [`verification-all-2026-11-09.txt`](verification-all-2026-11-09.txt): `7/7 examples passed`. A marker for the same example with any other status makes that example fail as an ambiguous log, even if the status 0 marker is also present.
 
 ## Common problems and cleanup
 
@@ -236,6 +236,7 @@ The launcher stops and waits for the QEMU process it started. Preserve `output/q
 - [`hello.c`](hello.c): the exact program compiled in step 4.
 - [`run-qemu.sh`](run-qemu.sh): the boot and capture block from step 6, as one script.
 - [`check-run.sh`](check-run.sh): checks a console file for the expected output and exit status of all seven examples.
+- [`test-check-run.sh`](test-check-run.sh): self-test for `check-run.sh` on synthetic logs (complete, missing line, missing marker, non-zero exit, conflicting markers, truncated); needs no SDK: `bash tutorial/test-check-run.sh`.
 - [`verification-all-2026-11-09.txt`](verification-all-2026-11-09.txt): checker output and serial console of a fresh boot with all seven examples on 9 November 2026.
 - [`part2-message-passing.md`](part2-message-passing.md): Part 2, native QNX message passing between a client and a server thread.
 - [`part3-resource-manager.md`](part3-resource-manager.md): Part 3, a resource manager at `/dev/automata-echo`, compiled directly and through MCP.

@@ -59,6 +59,13 @@ check_example() {
   if ! grep -Fxq -- "$marker" "$normalized_log"; then
     missing+="${missing:+; }missing exit marker: $marker"
   fi
+  # The same marker printed with any other value contradicts the run: an example that
+  # reported both success and failure must not pass on the success line alone.
+  local marker_name=${marker%%=*} conflicting
+  conflicting=$(grep -E -- "^${marker_name}=" "$normalized_log" | grep -Fxv -- "$marker" | sort -u | tr '\n' ' ')
+  if [[ -n "$conflicting" ]]; then
+    missing+="${missing:+; }ambiguous log, conflicting exit marker: ${conflicting% }"
+  fi
   if [[ -z "$missing" ]]; then
     printf 'PASS %s\n' "$example"
     passed=$((passed + 1))
