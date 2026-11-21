@@ -1,0 +1,9 @@
+# local/snippets/ifs_files.custom
+# Placeholder for local list of files to add to ifs
+[perms=0755] automata-hello=/root/qnx-repro-20261121/image/automata-hello
+[perms=0755] automata-msgpass=/root/qnx-repro-20261121/image/automata-msgpass
+[perms=0755] automata-resmgr=/root/qnx-repro-20261121/image/automata-resmgr
+[perms=0755] automata-pulses=/root/qnx-repro-20261121/image/automata-pulses
+[perms=0755] automata-events=/root/qnx-repro-20261121/image/automata-events
+[perms=0755] automata-prio=/root/qnx-repro-20261121/image/automata-prio
+[perms=0755] automata-name=/root/qnx-repro-20261121/image/automata-name

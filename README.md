@@ -208,7 +208,7 @@ Real compilation and subsequent guest execution are supported by separate retain
 
 Canonical path checks do not provide operating-system isolation. Persisted image configuration, actual stop scope, descendant ownership and live networking require verification before enabling MCP image execution. Use trusted source files and an operator-controlled workspace.
 
-The retained evidence was produced from a working copy of this source before publication; the exact source revision it was compiled from is not recorded in the reports.
+The retained evidence was produced from a working copy of this source before publication; the exact source revision it was compiled from is not recorded in the reports. On 21 November 2026 the seven examples were rebuilt and run again from a fresh clone of this public repository at revision `f9b3260`, and the checker passed 7 of 7: see [evidence/repro-f9b3260-20261121](evidence/repro-f9b3260-20261121/README.md). That run was done once, on the same host.
 
 ## QNX Global Hackathon
 

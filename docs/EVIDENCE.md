@@ -116,7 +116,7 @@ Separately, the isolated second candidate previously produced an observed Linux 
 
 ## Remaining provenance and delivery work
 
-- Associate compilation and guest evidence with the exact source revision and retain or link the source input.
+- Associate compilation and guest evidence with the exact source revision and retain or link the source input. Done for one later run: on 21 November 2026 the seven examples were rebuilt and run from a fresh clone at revision `f9b3260` ([evidence/repro-f9b3260-20261121](../evidence/repro-f9b3260-20261121/README.md), 7 of 7 in the checker). The earlier evidence folders remain without a recorded revision.
 - Preserve the distinction between inspected evidence and reported regression outcomes. Document SDK prerequisites without publishing restricted material or credentials.
 - Publish the repository and reviewed evidence with LICENSE visible.
 - Record and publish the video; verify playback and public links.

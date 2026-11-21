@@ -1,0 +1,48 @@
+== clone
+revision: f9b3260fcd31afb571cb0835aac85bae7f6926bb
+revision date: 2026-11-18T10:59:10-03:00
+working tree changes: 0
+== toolchain
+qcc: /root/qnx800/host/linux/x86_64/usr/bin/qcc
+QNX_TARGET: /root/qnx800/target/qnx
+QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)
+== compile (qcc -Vgcc_ntox86_64 -Wall)
+automata-hello <- examples/hello/src/hello.c rc=0 warnings_or_errors_lines=0
+  source sha256 e3354546234665f5230546f951c5d9969838b28dc01270abcf164beb146187af
+  binary sha256 e5596d9e949d480cf1c129c6dbcd98adec84661edad263e40af204991dc6e798 ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically l
+automata-msgpass <- examples/msgpass/src/msgpass.c rc=0 warnings_or_errors_lines=0
+  source sha256 f5e97c92017c8e93a35c610d4eb630fcb4b3ea303071cdddf7e892726a73cb18
+  binary sha256 1e928f1699eb8ecf7b40850043347a31eaeb313c26f3fd9945bb8dc6c71901e0 ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically l
+automata-resmgr <- examples/resmgr/src/resmgr.c rc=0 warnings_or_errors_lines=0
+  source sha256 a478fd5399b484442ce4d1308e96a16feb0d71e7acca919d488bd115398dbd13
+  binary sha256 fd8df5384b6aa110494c429c6d2e671ad92fbedae5f080431c3e5f28fc4b7249 ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically l
+automata-pulses <- examples/pulses/src/pulses.c rc=0 warnings_or_errors_lines=0
+  source sha256 0181ce2983ddd3ec53e8e4c263561178b32dd79aa51cd550e35858de7687743a
+  binary sha256 bddbd4f337ddcd0ebb28cec641bd450d0dce609ed4b24aa84afa9567fa7abe87 ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically l
+automata-events <- examples/events/src/events.c rc=0 warnings_or_errors_lines=0
+  source sha256 2ccec930139c74ede4ef816c5c32014c22cf0d88ed02e85f6a054f5e78d9e198
+  binary sha256 6ff7927b3d766767187a48227680eb6f064efa9a347f4dde8a12776c452881da ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically l
+automata-prio <- examples/prioinherit/src/prioinherit.c rc=0 warnings_or_errors_lines=0
+  source sha256 6400b590ac18360af8982c9738f64e062944a75ffd0eef4a117f7a1b52694019
+  binary sha256 2020c2c26cb7ec48ea95dc9992144aafa0437e3e2ca0a1bd12ac1b6e23bcf077 ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically l
+automata-name <- examples/nameservice/src/nameservice.c rc=0 warnings_or_errors_lines=0
+  source sha256 45de747ab4fa9a1adf7e0104cb12696cfca545fc553b068bfd29930aab482995
+  binary sha256 f7100afb90f394ef7ebaa57c5c704be94a242d14061c06ca944fd7a2666a386d ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically l
+== image (new empty directory)
+mkqnximage create rc=0
+mkqnximage build rc=0
+== boot (QEMU, no network, serial console to file)
+qemu processes left: 0
+== check-run.sh from the cloned revision
+PASS hello
+PASS msgpass
+PASS resmgr
+PASS pulses
+PASS events
+PASS prioinherit
+PASS nameservice
+7/7 examples passed
+check-run exit status: 0
+console sha256 66e2cb67bb71298a6bb28b2ee0bc4f5f6b4aed94908869bc6b35e34286e95b4a lines 57
+/root/qnx-repro-20261121/qemu-serial-console.txt:0
+/root/qnx-repro-20261121/report.txt:0
