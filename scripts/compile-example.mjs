@@ -45,7 +45,12 @@ try {
     await delay(50);
     result = await call('qnx_operation_status', { operationId: result.operationId });
   }
-  if (result.state !== 'succeeded' || result.exitCode !== 0) throw new Error(`Compile ${result.errorCode ?? result.state}`);
+  if (result.state !== 'succeeded' || result.exitCode !== 0) {
+    // Show the compiler diagnostics the server captured, so a failed build says why.
+    if (typeof result.stderr === 'string' && result.stderr.trim() !== '') console.error(result.stderr.trimEnd());
+    const code = result.exitCode === null || result.exitCode === undefined ? '' : ` (exit ${result.exitCode})`;
+    throw new Error(`Compile ${result.errorCode ?? result.state}${code}`);
+  }
   const artifact = path.join(workspace, result.artifact.path);
   const bytes = await readFile(artifact);
   const sha256 = createHash('sha256').update(bytes).digest('hex');

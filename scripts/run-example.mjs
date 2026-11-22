@@ -51,7 +51,12 @@ try {
   await client.connect(transport, { timeout: 10000 });
   transport.stderr?.resume();
   const compiled = await settle(await call('qnx_compile_c', { source }), 135000);
-  if (compiled.state !== 'succeeded' || compiled.exitCode !== 0) throw new Error(`Compile ${compiled.errorCode ?? compiled.state}`);
+  if (compiled.state !== 'succeeded' || compiled.exitCode !== 0) {
+    // Show the compiler diagnostics the server captured, so a failed build says why.
+    if (typeof compiled.stderr === 'string' && compiled.stderr.trim() !== '') console.error(compiled.stderr.trimEnd());
+    const code = compiled.exitCode === null || compiled.exitCode === undefined ? '' : ` (exit ${compiled.exitCode})`;
+    throw new Error(`Compile ${compiled.errorCode ?? compiled.state}${code}`);
+  }
   const ran = await settle(await call('qnx_run_artifact', { compileOperationId: compiled.operationId }), 300000);
   const markers = typeof ran.console === 'string'
     ? ran.console.split('\n').map(line => line.replace(/\r$/, '')).filter(line => line.trim() !== '').slice(-8)
