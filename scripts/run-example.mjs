@@ -71,7 +71,15 @@ try {
     },
     consoleTail: markers,
   }, null, 2));
-  if (ran.state !== 'succeeded' || ran.exitCode !== 0) exitCode = 1;
+  if (ran.state !== 'succeeded' || ran.exitCode !== 0) {
+    // Show why the image build or the QEMU boot failed, not only the codes above.
+    if (typeof ran.message === 'string' && ran.message.trim() !== '') console.error(`run-example: ${ran.message.trim()}`);
+    if (typeof ran.stderr === 'string' && ran.stderr.trim() !== '') {
+      console.error(ran.stderr.trimEnd());
+      if (ran.truncated) console.error('run-example: diagnostics truncated by the server output limit.');
+    }
+    exitCode = 1;
+  }
 } catch (error) {
   console.error(`run-example: ${error.message}`);
   exitCode = 1;
