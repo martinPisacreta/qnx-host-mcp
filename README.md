@@ -39,6 +39,7 @@ QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and 
 | [Tutorial: Part 7](tutorial/part7-name-service.md) | A client in another process that finds the server by name (`name_attach`, `name_open`) | [Recorded run](evidence/qemu-run-name-20261109/) |
 | [Tutorial: Part 8](tutorial/part8-run-through-mcp.md) | Compile and run a program through MCP with `qnx_run_artifact` | [Run output](evidence/run-artifact-20261109/run-output.txt) |
 | [Tutorial: Part 9](tutorial/part9-diagnose-and-fix.md) | A misspelled QNX flag returns the compiler's diagnostic with file, line and column; the one-line fix compiles and runs in QEMU | [Recorded steps](evidence/diagnose-fix-20261123/README.md) |
+| [Never-exiting example](examples/stuck/) | A guest program that never exits is stopped at the 60-second deadline (`TIMEOUT`, no QEMU left running) and the next run succeeds | [Recorded steps](evidence/timeout-recovery-20261123/README.md) |
 | [Hello example](examples/hello/) | QNX-target C compilation and guest execution | [Recorded run](evidence/qemu-run-20261103/) |
 | [Message-passing example](examples/msgpass/) | `ChannelCreate`, `ConnectAttach`, `MsgSend`, `MsgReceive`, `MsgReply` | [Recorded run](evidence/qemu-run-msgpass-20261104/) |
 | [Resource-manager example](examples/resmgr/) | `resmgr_attach`, custom `io_read`, ordinary `open` and `read` | [Recorded run](evidence/qemu-run-resmgr-20261106/) |
@@ -164,7 +165,7 @@ To enable it, the operator supplies an absolute `QNX_MCP_RUN_CONFIG` path to a J
 
 The server requires the SDK environment to be loaded beforehand. Each run copies the template without `output/`, verifies the compiled artifact, builds a private image and launches QEMU with no emulated network adapter. Guest console retention is limited to 32 KiB. Preparation, build, guest execution and cleanup have deadlines of 30, 120, 60 and 30 seconds, respectively. The result separates guest, builder and QEMU exit codes.
 
-Absent configuration or `enabled: false` returns `UNSAFE_CONFIGURATION` without creating an operation. Regression tests use synthetic executables. On 9 November 2026 the tool also ran with the real QNX SDP 8.0 SDK and QEMU: `examples/hello` and `examples/nameservice` each exited with status 0, leaving no QEMU process or run directory ([evidence](evidence/run-artifact-20261109/README.md)). To try it: `node scripts/run-example.mjs examples/hello src/hello.c`.
+Absent configuration or `enabled: false` returns `UNSAFE_CONFIGURATION` without creating an operation. Regression tests use synthetic executables. On 9 November 2026 the tool also ran with the real QNX SDP 8.0 SDK and QEMU: `examples/hello` and `examples/nameservice` each exited with status 0, leaving no QEMU process or run directory ([evidence](evidence/run-artifact-20261109/README.md)). To try it: `node scripts/run-example.mjs examples/hello src/hello.c`. On 23 November 2026 a program that never exits (`examples/stuck`) was stopped at the 60-second guest deadline with run state `timed_out` and error code `TIMEOUT`, no QEMU process remained, and `examples/hello` ran with status 0 immediately afterwards ([evidence](evidence/timeout-recovery-20261123/README.md)).
 
 ## Image configuration
 

@@ -1,0 +1,37 @@
+{
+  "source": "src/stuck.c",
+  "compile": {
+    "state": "succeeded",
+    "sizeBytes": 9304,
+    "sha256": "dcd1cebd334ba98ec38785ce101647f96f64b0aad4eb7f07c3f55b563e131000"
+  },
+  "run": {
+    "state": "timed_out",
+    "errorCode": "TIMEOUT",
+    "exitCode": null,
+    "buildExitCode": 0,
+    "qemuExitCode": 0,
+    "timings": {
+      "preparationMs": 33,
+      "buildMs": 1806,
+      "guestMs": 60006,
+      "cleanupMs": 44,
+      "totalMs": 61890
+    },
+    "consoleTruncated": false
+  },
+  "consoleTail": [
+    "if_up: tries exhausted",
+    "ifconfig: interface vtnet0 does not exist",
+    "no valid interfaces found",
+    "---> Starting sshd",
+    "Memory fault (core dumped) ",
+    "---> Starting misc",
+    "QNX_RUN_efc7f575af0500c1720e3ae5fccc8843_BEGIN",
+    "Started; this program never exits on its own."
+  ]
+}
+run-example: Operation termination requested.
+qemu-system-x86_64: terminating on signal 15 from pid 14322 (/usr/local/bin/node)
+exit status: 1
+elapsed seconds: 63
