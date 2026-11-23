@@ -1,0 +1,8 @@
+run-example: The tool returned a nonzero status or terminated by signal.
+examples/walkthrough/src/channel.c: In function 'main':
+examples/walkthrough/src/channel.c:7:30: error: '_NTO_CHF_DISCONECT' undeclared (first use in this function)
+    7 |     int chid = ChannelCreate(_NTO_CHF_DISCONECT);
+      |                              ^~~~~~~~~~~~~~~~~~
+examples/walkthrough/src/channel.c:7:30: note: each undeclared identifier is reported only once for each function it appears in
+run-example: Compile COMMAND_FAILED (exit 1)
+exit status: 1

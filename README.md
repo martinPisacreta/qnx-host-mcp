@@ -38,6 +38,7 @@ QNX Host MCP is a stdio MCP server for inspecting a configured QNX compiler and 
 | [Tutorial: Part 6](tutorial/part6-priority-inheritance.md) | A server thread that runs at the priority of the client it is serving | [Recorded run](evidence/qemu-run-prio-20261108/) |
 | [Tutorial: Part 7](tutorial/part7-name-service.md) | A client in another process that finds the server by name (`name_attach`, `name_open`) | [Recorded run](evidence/qemu-run-name-20261109/) |
 | [Tutorial: Part 8](tutorial/part8-run-through-mcp.md) | Compile and run a program through MCP with `qnx_run_artifact` | [Run output](evidence/run-artifact-20261109/run-output.txt) |
+| [Tutorial: Part 9](tutorial/part9-diagnose-and-fix.md) | A misspelled QNX flag returns the compiler's diagnostic with file, line and column; the one-line fix compiles and runs in QEMU | [Recorded steps](evidence/diagnose-fix-20261123/README.md) |
 | [Hello example](examples/hello/) | QNX-target C compilation and guest execution | [Recorded run](evidence/qemu-run-20261103/) |
 | [Message-passing example](examples/msgpass/) | `ChannelCreate`, `ConnectAttach`, `MsgSend`, `MsgReceive`, `MsgReply` | [Recorded run](evidence/qemu-run-msgpass-20261104/) |
 | [Resource-manager example](examples/resmgr/) | `resmgr_attach`, custom `io_read`, ordinary `open` and `read` | [Recorded run](evidence/qemu-run-resmgr-20261106/) |

@@ -1,0 +1,4 @@
+revision ac77688756ac1f8b12f94cf9f6c9805df165c895
+v22.23.3
+npm ci rc=0
+<QNX SDP 8.0>/host/linux/x86_64/usr/bin/qcc

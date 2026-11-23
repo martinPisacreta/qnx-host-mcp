@@ -1,0 +1,28 @@
+{
+  "source": "src/channel.c",
+  "compile": {
+    "state": "succeeded",
+    "sizeBytes": 9352,
+    "sha256": "66bd7a3bb76f1ab80afd4a9e2de5e053e04d12a8639568c2fc4f8316cdd7bdc3"
+  },
+  "run": {
+    "state": "succeeded",
+    "errorCode": null,
+    "exitCode": 0,
+    "buildExitCode": 0,
+    "qemuExitCode": 0,
+    "timings": "removed from this published copy",
+    "consoleTruncated": false
+  },
+  "consoleTail": [
+    "no valid interfaces found",
+    "---> Starting sshd",
+    "Memory fault (core dumped) ",
+    "---> Starting misc",
+    "QNX_RUN_b5508da14a1a3c31882f9791b3b374e4_BEGIN",
+    "Channel created: chid=1",
+    "Walkthrough program finished.",
+    "QNX_RUN_b5508da14a1a3c31882f9791b3b374e4_EXIT=0"
+  ]
+}
+exit status: 0
