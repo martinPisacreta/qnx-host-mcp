@@ -53,6 +53,8 @@ try {
   const compiled = await settle(await call('qnx_compile_c', { source }), 135000);
   if (compiled.state !== 'succeeded' || compiled.exitCode !== 0) {
     // Show the compiler diagnostics the server captured, so a failed build says why.
+    // A request rejected before the compiler runs has an empty stderr and the reason in message.
+    if (typeof compiled.message === 'string' && compiled.message.trim() !== '') console.error(`run-example: ${compiled.message.trim()}`);
     if (typeof compiled.stderr === 'string' && compiled.stderr.trim() !== '') console.error(compiled.stderr.trimEnd());
     const code = compiled.exitCode === null || compiled.exitCode === undefined ? '' : ` (exit ${compiled.exitCode})`;
     throw new Error(`Compile ${compiled.errorCode ?? compiled.state}${code}`);

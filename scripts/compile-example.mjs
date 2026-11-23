@@ -47,6 +47,8 @@ try {
   }
   if (result.state !== 'succeeded' || result.exitCode !== 0) {
     // Show the compiler diagnostics the server captured, so a failed build says why.
+    // A request rejected before the compiler runs has an empty stderr and the reason in message.
+    if (typeof result.message === 'string' && result.message.trim() !== '') console.error(`compile-example: ${result.message.trim()}`);
     if (typeof result.stderr === 'string' && result.stderr.trim() !== '') console.error(result.stderr.trimEnd());
     const code = result.exitCode === null || result.exitCode === undefined ? '' : ` (exit ${result.exitCode})`;
     throw new Error(`Compile ${result.errorCode ?? result.state}${code}`);
